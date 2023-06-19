@@ -1,0 +1,449 @@
+Java - Patrones de diseño
+*************************
+
+Los patrones de diseño más importantes en Java son:
+
+Creacionales:
+
+1. Patrón de Diseño Singleton:
+Este patrón garantiza que solo exista una instancia de una clase en todo el programa y proporciona un punto de acceso global a esa instancia.
+2. Patrón de Diseño Abstract Factory:
+Este patrón se utiliza para crear objetos sin especificar la clase concreta de antemano. La fábrica decide qué clase instanciar en función de los parámetros proporcionados.
+
+Estructurales:
+
+1. Patrón de Diseño Decorator:
+Este patrón se utiliza para añadir funcionalidad adicional a un objeto en tiempo de ejecución sin modificar su estructura. El decorador envuelve el objeto original y proporciona características adicionales.
+2. Patrón de Diseño Composite:
+Este patrón se utiliza para establecer una relación uno a muchos entre objetos, de modo que cuando un objeto cambia de estado, todos los objetos dependientes son notificados y actualizados automáticamente.
+
+De comportamiento:
+
+Patrón de Diseño Observer:
+Este patrón se utiliza para establecer una relación uno a muchos entre objetos, de modo que cuando un objeto cambia de estado, todos los objetos dependientes son notificados y actualizados automáticamente.
+
+Arquitectura:
+
+Patrón de Diseño MVC (Modelo-Vista-Controlador):
+Este patrón se utiliza para separar la lógica de negocio (modelo), la presentación (vista) y el control de las interacciones (controlador) en una aplicación.
+
+Singleton
+=========
+
+Patrón que consiste en generar una única instancia de clase.
+
+Clase:
+
+package com.patrones.singleton;
+
+public class Pais {
+    private String nombre;
+
+    public Pais(String nombre) {
+        super();
+        this.nombre = nombre;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+}
+
+Implementación Singleton:
+
+package com.patrones.singleton;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class PaisDAOImpl {
+    public static PaisDAOImpl instancia = null;
+    private List paises = null;
+
+    private PaisDAOImpl(){
+
+    }
+
+    public static PaisDAOImpl getInstance(){
+        //synchronized (App.class) { // para tema de hilos
+            if(instancia == null){
+                instancia = new PaisDAOImpl();
+                System.out.println("Se ha creado una instancia");
+            }
+        //}
+        return instancia;
+    }
+
+    public List getPaises() {
+        if (paises == null) {
+            paises = new ArrayList();
+
+            Pais p1 = new Pais("PERU");
+            Pais p2 = new Pais("MEXICO");
+            Pais p3 = new Pais("COLOMBIA");
+
+            paises.add(p1);
+            paises.add(p2);
+            paises.add(p3);
+        }
+        return paises;
+    }
+}
+
+Uso:
+
+import com.patrones.singleton.Pais;
+import com.patrones.singleton.PaisDAOImpl;
+
+public class Main {
+    public static void main(String[] args) {
+        PaisDAOImpl dao = PaisDAOImpl.getInstance();
+        // primer recorrido
+        for (Object p: dao.getPaises()) {
+            System.out.println("País : " + ((Pais)p).getNombre());
+        }
+    }
+}
+
+Abstract Factory
+================
+
+El patrón de diseño Abstract Factory, o fábrica abstracta en español, es un patrón creacional que proporciona una interfaz para crear familias de objetos relacionados sin especificar sus clases concretas. Permite encapsular la creación de objetos relacionados, proporcionando una forma de crear familias de objetos de manera coherente y flexible.
+
+En Java, el patrón Abstract Factory se implementa utilizando interfaces y clases abstractas. La idea principal es tener una interfaz abstracta, llamada "FabricaAbstracta", que declara los métodos para crear los objetos de la familia. Luego, se crean múltiples implementaciones concretas de esta interfaz, cada una correspondiente a una familia específica de objetos.
+
+Un ejemplo sencillo y breve para entender el patrón Abstract Factory en Java podría ser el de una fábrica de figuras geométricas. Supongamos que tenemos dos tipos de figuras: círculos y cuadrados, y queremos tener una forma de crear estas figuras sin acoplar el código a implementaciones concretas.
+
+Primero, definiremos una interfaz abstracta llamada "Figura" que contendrá métodos comunes que deben tener todas las figuras, como dibujar().
+
+public interface Figura {
+    void dibujar();
+}
+
+
+A continuación, crearemos dos implementaciones concretas de esta interfaz: "Circulo" y "Cuadrado". Cada una de estas implementaciones será responsable de proporcionar la lógica específica para dibujar la respectiva figura.
+
+public class Circulo implements Figura {
+    public void dibujar() {
+        System.out.println("Se dibuja un círculo.");
+    }
+}
+
+public class Cuadrado implements Figura {
+    public void dibujar() {
+        System.out.println("Se dibuja un cuadrado.");
+    }
+}
+
+
+Luego, crearemos una interfaz abstracta llamada "FabricaAbstracta" que declara el método para crear las figuras.
+
+public interface FabricaAbstracta {
+    Figura crearFigura();
+}
+
+
+A continuación, implementaremos dos fábricas concretas, una para círculos y otra para cuadrados, que implementarán la interfaz "FabricaAbstracta" y crearán las figuras correspondientes.
+
+public class FabricaCirculo implements FabricaAbstracta {
+    public Figura crearFigura() {
+        return new Circulo();
+    }
+}
+
+public class FabricaCuadrado implements FabricaAbstracta {
+    public Figura crearFigura() {
+        return new Cuadrado();
+    }
+}
+
+
+Finalmente, para utilizar el patrón Abstract Factory, podemos crear un cliente que haga uso de la fábrica abstracta y las figuras creadas:
+
+public class Cliente {
+    public static void main(String[] args) {
+        FabricaAbstracta fabricaCirculo = new FabricaCirculo();
+        Figura circulo = fabricaCirculo.crearFigura();
+        circulo.dibujar();
+
+        FabricaAbstracta fabricaCuadrado = new FabricaCuadrado();
+        Figura cuadrado = fabricaCuadrado.crearFigura();
+        cuadrado.dibujar();
+    }
+}
+
+
+En este ejemplo breve, utilizamos las fábricas concretas (FabricaCirculo y FabricaCuadrado) para crear instancias de figuras (Circulo y Cuadrado) sin acoplar nuestro código a implementaciones concretas. Podemos utilizar las figuras creadas para realizar operaciones específicas de cada tipo de figura, como dibujarlas.
+
+El patrón Abstract Factory nos permite encapsular la creación de objetos relacionados y nos proporciona una forma coherente y flexible de crear familias de objetos sin acoplar nuestro código a implementaciones concretas. Además, si en el futuro deseamos agregar nuevos tipos de figuras, solo necesitaremos crear nuevas implementaciones de la interfaz Figura y una nueva fábrica correspondiente, sin necesidad de modificar el código existente.
+
+En resumen, lo que se hace es:
+
+1. Definir una interfaz general que aplica para todas las clases que la implementan.
+2. Crear clases que implementen la interfaz general.
+3. Definir una interfaz de fábrica abstracta que tiene los método creacional que será implementado por clases que representan a fábricas concretas.
+4. Instanciar las clases concretas a partir de instancias de la interfaz de fábrica abstracta.
+
+
+Decorator
+=========
+
+El patrón de diseño Decorator, o decorador en español, es un patrón estructural que permite agregar comportamiento adicional a un objeto de manera dinámica. El decorador proporciona una forma flexible de extender la funcionalidad de un objeto sin necesidad de modificar su estructura original.
+
+En Java, el patrón Decorator se implementa utilizando la herencia y composición. Se crea una clase base que define la interfaz común para todos los componentes y luego se crean clases concretas que implementan esta interfaz. A continuación, se crean clases decoradoras que también implementan la misma interfaz y tienen una referencia a un objeto del componente original. Las clases decoradoras agregan funcionalidad adicional antes o después de llamar al componente original.
+
+Un ejemplo sencillo y breve para entender el patrón Decorator en Java podría ser el de un sistema de notificaciones donde tenemos una clase base llamada "Notificacion" que proporciona una interfaz común para todas las notificaciones. Luego, creamos una implementación concreta de esta clase llamada "NotificacionBasica" que representa una notificación básica.
+
+public interface Notificacion {
+    void enviar();
+}
+
+public class NotificacionBasica implements Notificacion {
+
+    @Override
+    public void enviar() {
+        System.out.println("Enviando notificación básica...");
+    }
+}
+
+A continuación, creamos una clase decoradora llamada "NotificacionDecorada" que implementa la interfaz "Notificacion" y tiene una referencia a un objeto del componente original. Esta clase agrega funcionalidad adicional antes y después de llamar al método enviar() del componente original.
+
+public class NotificacionDecorada implements Notificacion {
+    private Notificacion notificacion;
+
+    public NotificacionDecorada(Notificacion notificacion) {
+        this.notificacion = notificacion;
+    }
+
+    @Override
+    public void enviar() {
+        // Funcionalidad adicional antes de enviar la notificación
+        System.out.println("Realizando acciones adicionales antes de enviar la notificación...");
+
+        // Llamada al método enviar() del componente original
+        notificacion.enviar();
+
+        // Funcionalidad adicional después de enviar la notificación
+        System.out.println("Realizando acciones adicionales después de enviar la notificación...");
+    }
+}
+
+Finalmente, para utilizar el patrón Decorator, podemos crear una instancia del componente original y luego envolverlo con una o varias instancias de las clases decoradoras. Esto nos permite agregar funcionalidad adicional a la notificación básica sin modificar la estructura original.
+
+public class Cliente {
+    public static void main(String[] args) {
+        // Crear una instancia del componente original
+        Notificacion notificacion = new NotificacionBasica();
+
+        // Envolver el componente original con una o varias instancias de las clases decoradoras
+        notificacion = new NotificacionDecorada(notificacion);
+        notificacion.enviar();
+    }
+}
+
+En este ejemplo breve, creamos una instancia de NotificacionBasica y luego la envolvemos con una instancia de NotificacionDecorada. Al llamar al método enviar(), se ejecutará la funcionalidad adicional antes y después de llamar al método enviar() del componente original.
+
+El patrón Decorator nos permite extender la funcionalidad de un objeto de forma dinámica y flexible, evitando la necesidad de modificar su estructura original. Podemos agregar o quitar funcionalidades adicionales de manera sencilla mediante la composición de decoradores. Esto nos brinda un código modular, fácil de mantener y extender.
+
+En resumen:
+1. Se crea una interfaz base con una funcionalidad básica.
+2. Se crea una clase que implementa a la interfaz base.
+3. Se crea una clase decoradora, la cual emplea una instancia de la interfaz base y sobreimplementa la funcionalidad base.
+4. Se emplea una instancia del componente original en el programa, la cual es envuelta por una o más instancias de las clases decoradoras.
+
+
+Composite
+=========
+
+El patrón de diseño Composite, o composición en español, es un patrón estructural que permite tratar a un grupo de objetos de manera similar a un objeto individual. El patrón Composite organiza los objetos en una estructura de árbol, donde los nodos internos y las hojas se tratan de manera uniforme.
+
+En Java, el patrón Composite se implementa mediante una clase base común que representa tanto los elementos individuales (hojas) como los elementos compuestos (nodos internos). Cada elemento tiene una lista de hijos, lo que permite la creación de estructuras jerárquicas.
+
+Un ejemplo sencillo y breve para entender el patrón Composite en Java podría ser el de una estructura de archivos y carpetas en un sistema de archivos. Supongamos que queremos representar tanto los archivos individuales como las carpetas que contienen archivos y posiblemente otras subcarpetas.
+
+Primero, creamos una interfaz o clase abstracta llamada "Componente" que define la interfaz común para los elementos individuales y compuestos. Esta interfaz puede contener métodos como obtenerTamaño() para obtener el tamaño de un archivo o carpeta, imprimir() para mostrar la estructura de archivos y carpetas, etc.
+
+public interface Componente {
+    void imprimir();
+    int obtenerTamaño();
+}
+
+A continuación, creamos clases concretas que implementan esta interfaz. Por ejemplo, una clase "Archivo" que representa un archivo individual y una clase "Carpeta" que representa una carpeta que contiene archivos y posiblemente otras subcarpetas.
+
+public class Archivo implements Componente {
+    private String nombre;
+    private int tamaño;
+
+    public Archivo(String nombre, int tamaño) {
+        this.nombre = nombre;
+        this.tamaño = tamaño;
+    }
+
+    public void imprimir() {
+        System.out.println("Archivo: " + nombre);
+    }
+
+    public int obtenerTamaño() {
+        return tamaño;
+    }
+}
+
+public class Carpeta implements Componente {
+    private String nombre;
+    private List<Componente> componentes;
+
+    public Carpeta(String nombre) {
+        this.nombre = nombre;
+        this.componentes = new ArrayList<>();
+    }
+
+    public void agregar(Componente componente) {
+        componentes.add(componente);
+    }
+
+    public void imprimir() {
+        System.out.println("Carpeta: " + nombre);
+        for (Componente componente : componentes) {
+            componente.imprimir();
+        }
+    }
+
+    public int obtenerTamaño() {
+        int tamañoTotal = 0;
+        for (Componente componente : componentes) {
+            tamañoTotal += componente.obtenerTamaño();
+        }
+        return tamañoTotal;
+    }
+}
+
+Finalmente, para utilizar el patrón Composite, creamos una estructura jerárquica de archivos y carpetas combinando objetos de archivos y carpetas.
+
+public class Cliente {
+    public static void main(String[] args) {
+        Componente archivo1 = new Archivo("archivo1.txt", 100);
+        Componente archivo2 = new Archivo("archivo2.txt", 200);
+        Componente carpeta1 = new Carpeta("carpeta1");
+        carpeta1.agregar(archivo1);
+        carpeta1.agregar(archivo2);
+
+        Componente archivo3 = new Archivo("archivo3.txt", 150);
+        Componente carpeta2 = new Carpeta("carpeta2");
+        carpeta2.agregar(archivo3);
+        carpeta2.agregar(carpeta1);
+
+        carpeta2.imprimir();
+
+        int tamañoTotal = carpeta2.obtenerTamaño();
+        System.out.println("Tamaño total: " + tamañoTotal);
+    }
+}
+
+En este ejemplo breve, creamos una estructura jerárquica de archivos y carpetas. La carpeta "carpeta2" contiene el archivo "archivo3.txt" y la carpeta "carpeta1", que a su vez contiene los archivos "archivo1.txt" y "archivo2.txt". Al llamar al método imprimir(), se muestra la estructura de archivos y carpetas. Al llamar al método obtenerTamaño(), se obtiene el tamaño total de todos los archivos dentro de la carpeta "carpeta2".
+
+El patrón Composite nos permite tratar tanto los elementos individuales como los elementos compuestos de manera uniforme, lo que facilita la manipulación de estructuras jerárquicas. Además, nos permite agregar y eliminar elementos de manera dinámica sin afectar el código cliente.
+
+En resumen:
+
+1. Se crea una interfaz base.
+2. Se crean dos clases base que implementan la interfaz.
+3. Se crean instancias de la base que se hacen específicas en cada clase que las implementan.
+
+
+Observer
+========
+
+El patrón de diseño Observer, o observador en español, es un patrón de comportamiento que establece una relación de uno a muchos entre objetos, de manera que cuando un objeto cambia de estado, notifica y actualiza automáticamente a todos los objetos que dependen de él. El patrón Observer permite mantener la consistencia entre objetos relacionados sin acoplarlos directamente.
+
+En Java, el patrón Observer se implementa utilizando la interfaz Observer y la clase Observable. Los objetos observables son aquellos que pueden ser observados y notifican a los observadores cuando su estado cambia. Los observadores son aquellos que están interesados en recibir notificaciones sobre los cambios de estado de los objetos observables.
+
+Un ejemplo sencillo y breve para entender el patrón Observer en Java podría ser el de un sistema de suscripción a noticias, donde tenemos una clase Notificador que actúa como objeto observable y una interfaz Suscriptor que define la interfaz para los observadores.
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
+public class Notificador extends Observable {
+    private List<String> noticias;
+
+    public Notificador() {
+        this.noticias = new ArrayList<>();
+    }
+
+    public void agregarNoticia(String noticia) {
+        noticias.add(noticia);
+        setChanged(); // Marcar el objeto observable como modificado
+        notifyObservers(noticia); // Notificar a los observadores
+    }
+}
+
+public interface Suscriptor extends Observer {
+    void recibirNoticia(String noticia);
+}
+
+Luego, creamos una clase concreta SuscriptorImpl que implementa la interfaz Suscriptor y define el comportamiento específico para recibir y procesar las noticias.
+
+public class SuscriptorImpl implements Suscriptor {
+    private String nombre;
+
+    public SuscriptorImpl(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void recibirNoticia(String noticia) {
+        System.out.println(nombre + " ha recibido una noticia: " + noticia);
+    }
+
+    @Override
+    public void update(Observable observable, Object arg) {
+        recibirNoticia((String) arg);
+    }
+}
+
+Finalmente, para utilizar el patrón Observer, creamos instancias de Notificador y SuscriptorImpl. El SuscriptorImpl se registra como observador del Notificador y cuando se agrega una nueva noticia, el Notificador notifica automáticamente a todos los observadores.
+
+public class Cliente {
+    public static void main(String[] args) {
+        Notificador notificador = new Notificador();
+
+        SuscriptorImpl suscriptor1 = new SuscriptorImpl("Suscriptor 1");
+        SuscriptorImpl suscriptor2 = new SuscriptorImpl("Suscriptor 2");
+
+        notificador.addObserver(suscriptor1);
+        notificador.addObserver(suscriptor2);
+
+        notificador.agregarNoticia("Nueva noticia 1");
+        notificador.agregarNoticia("Nueva noticia 2");
+    }
+}
+
+En este ejemplo breve, creamos un Notificador y dos SuscriptorImpl. Los SuscriptorImpl se registran como observadores del Notificador y cuando se agrega una nueva noticia, el Notificador notifica automáticamente a los observadores. Los SuscriptorImpl reciben la noticia y realizan la acción específica en el método recibirNoticia().
+
+El patrón Observer permite establecer una relación flexible entre los objetos observables y los observadores, lo que facilita la propagación de cambios de estado y la actualización automática de los observadores. Además, permite desacoplar los objetos observables de los observadores, lo que resulta en un código más mantenible y flexible.
+
+En resumen:
+
+1. Crear una interfaz heredada de la interfaz Observer y otra de la clase Observable. Para el resumen, el primer ítem se llamará "Subscriptor" y el segundo "Notificador".
+2. Implementar la interfaz Subscriptor en su método update (heredado de Observer). Llamemos a esta clase SubscriptorImpl.
+3. En el programa, se creará una instancia de Notificador y varios subscriptores. Entonces se genera una relación tal como: un notificador tiene muchos subscriptores, lo cual va con el concepto de este patrón de diseño.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

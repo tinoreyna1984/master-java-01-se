@@ -1,0 +1,366 @@
+Java - Arreglos y Matrices
+**************************
+
+* NOTA: los arreglos y matrices son objetos, a diferencia de las variables de tipo primitivo. Por ello, al usarlos como argumentos para alguna función, estos se pasan por referencia y no por valor, pues todo objeto es un puntero y, por ello, ocupa una posición de memoria que persiste durante la ejecución de un programa.
+
+Arreglos
+========
+
+Son agrupaciones de valores u objetos unidimensionales. Todos deben ser del mismo tipo de dato primitivo o clase.
+
+Ej:
+
+String[] productos = new String[7];
+productos[0] = "Kingston Pendrive 64GB";
+productos[1] = "Samsung Galaxy";
+productos[2] = "Disco Duro SSD Samsung Externo";
+productos[3] = "Asus Notebook";
+productos[4] = "Macbook Air";
+productos[5] = "Chromecast 4ta generación";
+productos[6] = "Bicicleta Oxford";
+
+int[] numeros = new int[4];
+numeros[0] = 10;
+numeros[1] = Integer.valueOf("7");
+numeros[2] = 35;
+numeros[3] = -1;
+
+Ordenamiento de elementos
+-------------------------
+
+Método sort de la clase Arrays. Ej:
+Arrays.sort(productos);
+Arrays.sort(numeros);
+
+Ordenamientos importantes
+-------------------------
+
+# Burbuja
+
+public static void sortBurbuja(Object[] arreglo){
+
+	int total = arreglo.length;
+	int contador = 0;
+
+	for(int i = 0; i < total - 1; i++){
+		for(int j = 0; j < total -1 -i; j++){
+			if( ((Comparable) arreglo[j+1]).compareTo(arreglo[j]) > 0 ){
+				Object auxiliar = arreglo[j];
+				arreglo[j] = arreglo[j+1];
+				arreglo[j+1] = auxiliar;
+			}
+			contador++;
+		}
+	}
+
+	System.out.println("contador = " + contador);
+}
+
+# Obtener el número mayor
+
+public class EjemploArreglosNumMayor {
+    public static void main(String[] args) {
+
+        int[] a = new int[5];
+        Scanner s = new Scanner(System.in);
+
+        System.out.println("Ingrese 5 enteros:");
+        for(int i = 0; i<a.length; i++){
+            a[i] = s.nextInt();
+        }
+
+        int max = 0;
+        for(int i = 1; i < a.length; i++){
+            max = (a[max] > a[i])? max: i;
+        }
+        System.out.println("max = " + a[max]);
+    }
+}
+
+# Desplazamiento de elementos del arreglo
+
+import java.util.Scanner;
+
+public class EjemploArreglosDesplazarPosicion {
+    public static void main(String[] args) {
+
+        int[] a = new int[10];
+        int ultimo;
+        Scanner s = new Scanner(System.in);
+
+        for(int i = 0; i < a.length; i++){
+            System.out.print("Ingrese el número:");
+            a[i] = s.nextInt();
+        }
+        System.out.println();
+        ultimo = a[a.length-1];
+        for(int i = a.length -2; i >= 0; i--){
+            a[i+1] = a[i];
+        }
+        a[0] = ultimo;
+
+        System.out.println("El arreglo:");
+        for(int i = 0; i < a.length; i++){
+            System.out.println(a[i]);
+        }
+
+    }
+}
+
+# Insertar nuevo elemento del arreglo en una posición determinada
+
+import java.util.Scanner;
+
+public class EjemploArreglosDesplazarPosicion2 {
+    public static void main(String[] args) {
+
+        int[] a = new int[10];
+        int elemento, posicion;
+        Scanner s = new Scanner(System.in);
+
+        for(int i = 0; i < a.length-1; i++){
+            System.out.print("Ingrese el número:");
+            a[i] = s.nextInt();
+        }
+        System.out.println();
+
+        System.out.println("Nuevo elemento:");
+        elemento = s.nextInt();
+
+        System.out.println("Posición donde agregar (de 0 a 9)");
+        posicion = s.nextInt();
+
+        // calcula el reordenamiento de los elementos para colocar el nuevo elemento
+        for(int i = a.length -2; i >= posicion; i--){
+            a[i+1] = a[i];
+        }
+        a[posicion] = elemento;
+
+        System.out.println("El arreglo:");
+        for(int i = 0; i < a.length; i++){
+            System.out.println(a[i]);
+        }
+
+    }
+}
+
+# Eliminar elemento del arreglo
+
+import java.util.Scanner;
+
+public class EjemplosArreglosEliminarElemento {
+    public static void main(String[] args) {
+
+        int[] a = new int[10];
+
+        Scanner s = new Scanner(System.in);
+
+        for(int i = 0; i < a.length; i++){
+            System.out.print("Ingrese un número: ");
+            a[i] = s.nextInt();
+        }
+        System.out.println();
+        System.out.println("Ingrese una posición a eliminar entre 0 - 9:");
+        int posicion = s.nextInt();
+
+        for(int i = posicion; i < a.length - 1; i++){
+            a[i] = a[i+1];
+        }
+
+        int[] b = new int[a.length-1];
+        System.arraycopy(a, 0, b, 0, b.length);
+
+        a = b;
+        for(int i = 0; i<a.length;i++){
+            System.out.println(i + " => " + a[i]);
+        }
+    }
+}
+
+# Insertar nuevo elemento del arreglo en una posición determinada e incrementar el tamaño del arreglo
+
+import java.util.Scanner;
+
+public class EjemploArreglosDesplazarPosicion2b {
+    public static void main(String[] args) {
+
+        int[] a = new int[10];
+        int elemento, posicion, ultimo;
+        Scanner s = new Scanner(System.in);
+
+        for(int i = 0; i < a.length; i++){
+            System.out.print("Ingrese el número:");
+            a[i] = s.nextInt();
+        }
+        System.out.println();
+
+        System.out.println("Nuevo elemento:");
+        elemento = s.nextInt();
+
+        System.out.println("Posición donde agregar (de 0 a 9)");
+        posicion = s.nextInt();
+
+        // la variable temporal almacena el valor del último elemento
+        ultimo = a[a.length -1];
+        // reordena los elementos
+        for(int i = a.length - 2; i >= posicion; i--){
+            a[i+1] = a[i];
+        }
+        // se crea un arreglo copia para completar el reordenamiento
+        int[] b = new int[a.length+1];
+        System.arraycopy(a, 0, b, 0, a.length);
+        a = b;
+        a[posicion] = elemento;
+        a[a.length -1] = ultimo;
+
+        System.out.println("El arreglo:");
+        for(int i = 0; i < a.length; i++){
+            System.out.println(a[i]);
+        }
+
+    }
+}
+
+
+Matrices
+========
+
+Son, fundamentalmente, arreglos de arreglos.
+
+int[][] numeros = new int[2][4];
+
+numeros[0][0] = 1;
+numeros[0][1] = 2;
+numeros[0][2] = 3;
+numeros[0][3] = 4;
+
+numeros[1][0] = 11;
+numeros[1][1] = 12;
+numeros[1][2] = 13;
+numeros[1][3] = 14;
+
+System.out.println("número de filas: " + numeros.length);
+System.out.println("número de columnas: " + numeros[0].length);
+
+System.out.println("primer elemento de la matriz: " + numeros[0][0]);
+System.out.println("último elemento: " + numeros[numeros.length -1][numeros[1].length -1]);
+
+# Ejemplo con String
+
+public class EjemploMatricesStringFor {
+    public static void main(String[] args) {
+
+        String[][] nombres = new String[3][2];
+        nombres[0][0] = "Pepe";
+        nombres[0][1] = "Pepa";
+        nombres[1][0] = "Josefa";
+        nombres[1][1] = "Paco";
+        nombres[2][0] = "Lucas";
+        nombres[2][1] = "Pancha";
+
+        System.out.println("Iterando con for: ");
+        for(int i = 0; i < nombres.length; i++){
+
+            for(int j = 0; j < nombres[i].length; j++){
+                System.out.print(nombres[i][j] + "\t");
+            }
+            System.out.println();
+        }
+
+        System.out.println("Iterando con foreach: ");
+
+        for(String[] fila: nombres){ // fila como arreglo de objetos de la clase String
+            for(String nombre: fila){ // cada nombre es un objeto de la clase String en la fila actual
+                System.out.print(nombre + "\t");
+            }
+            System.out.println();
+        }
+
+    }
+}
+
+También se puede inicializar como: String[][] nombres = { {"Pepe", "Pepa"}, {"Josefa", "Paco"}, {"Lucas", "Pancha"}};
+
+
+# Matriz simétrica
+
+public class EjemploMatricesSimetrica {
+    public static void main(String[] args) {
+        boolean simetrica = true;
+
+        int[][] matriz = {
+                {1,2,3,4},
+                {2,1,0,5},
+                {3,0,1,6},
+                {4,5,6,7}
+        };
+
+        salir: for(int i = 0; i < matriz.length; i++){
+
+           for(int j = 0;j < i; j++){
+               if(matriz[i][j] != matriz[j][i]){
+                   simetrica = false;
+                   break salir;
+               }
+           }
+        }
+
+        if(simetrica){
+            System.out.println("La matriz es simétrica");
+        } else{
+            System.out.println("La matriz no es simétrica");
+        }
+    }
+}
+
+
+# Matriz transpuesta
+
+public class EjemploMatricesTranspuesta {
+    public static void main(String[] args) {
+        int[][] matriz = {
+                {1,2,3,4},
+                {5,6,7,8},
+                {9,10,11,12},
+                {13,14,15,16}
+        };
+
+        System.out.println("Matriz original");
+        for(int i = 0; i < matriz.length; i++){
+            for(int j = 0; j < matriz[i].length; j++){
+                System.out.print(matriz[i][j] + "\t");
+            }
+            System.out.println();
+        }
+        int aux;
+        for(int i = 1; i < matriz.length; i++){
+            for(int j = 0; j < i; j++){
+                aux = matriz[i][j];
+                matriz[i][j] = matriz[j][i];
+                matriz[j][i]= aux;
+            }
+        }
+
+        System.out.println("Matriz transpuesta");
+        for(int i = 0; i < matriz.length; i++){
+            for(int j = 0; j < matriz[i].length; j++){
+                System.out.print(matriz[i][j] + "\t");
+            }
+            System.out.println();
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

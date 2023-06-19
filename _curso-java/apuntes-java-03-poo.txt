@@ -1,0 +1,1014 @@
+Java - Programación Orientada a Objetos (POO)
+*********************************************
+
+Definiciones fundamentales
+==========================
+* Objeto: todo aquello que existe y pueda reconocerse concretamente por sus características y funciones.
+* Clase: es el molde o base de todos los objetos que contemplan características y funciones afines.
+* Instancia: es el objeto en acción. En términos informáticos, actúa en tiempo de ejecución de un programa.
+* Atributos y métodos: los atributos son las cualidades medibles y variables de un objeto, mientras que los métodos son funciones que permiten actuar a tal objeto. Una clase que agrupa objetos afines define la naturaleza de sus atributos y métodos. En términos informáticos, los atributos equivalen a las variables y los métodos a funciones especializadas de las clases (reciben parámetros, devuelven o no algún valor, etcétera).
+
+Principios fundamentales de la POO
+==================================
+* Abstracción: cada clase debe tener sus propios atributos y métodos, mayormente distinguibles de otras clases. Una clase se comunica con otra por medio de mensajes (llamadas a métodos).
+* Encapsulamiento: los atributos no pueden ser visibles fuera de la clase, sino a través de sus métodos. Del mismo modo, solo pueden modificarse sus valores también por métodos.
+* Herencia: una clase puede heredar atributos y métodos de otra.
+* Polimorfismo: una clase puede actuar de múltiples formas en función de los mensajes recibidos. Concretamente, para que tenga esa flexibilidad de actuación, la POO ofrece conceptos de sobrecarga de métodos (redefinir métodos con el mismo nombre pero con diferentes entradas y salidas) e interfaces (elementos de comunicación entre clases por medio de implementación de métodos afines).
+
+Ejemplo de clase
+----------------
+
+public class Automovil implements Comparable<Automovil>{
+
+    private int id;
+    private String fabricante;
+    private String modelo;
+    private Color color = Color.GRIS;
+    private Motor motor;
+    private Estanque estanque;
+    private Persona conductor;
+    private Rueda[] ruedas;
+    private int indiceRuedas;
+
+    private TipoAutomovil tipo;
+
+    private static Color colorPatente = Color.NARANJO;
+    private static int capacidadEstanqueEstatico = 30;
+    private static int ultimoId;
+
+    public static final Integer VELOCIDAD_MAX_CARRETERA = 120;
+    public static final int VELOCIDAD_MAX_CIUDAD = 60;
+
+    public static final String COLOR_ROJO = "Rojo";
+    public static final String COLOR_AMARILLO = "Amarillo";
+    public static final String COLOR_AZUL = "Azul";
+    public static final String COLOR_BLANCO = "Blanco";
+    public static final String COLOR_GRIS = "Gris Oscuro";
+
+    public Automovil() {
+        this.id = ++ultimoId;
+        this.ruedas = new Rueda[5];
+    }
+
+    public Automovil(String fabricante, String modelo) {
+        this();
+        this.fabricante = fabricante;
+        this.modelo = modelo;
+    }
+
+    public Automovil(String fabricante, String modelo, Color color){
+        this(fabricante, modelo);
+        this.color = color;
+    }
+
+    public Automovil(String fabricante, String modelo, Color color, Motor motor) {
+        this(fabricante, modelo, color);
+        this.motor = motor;
+    }
+
+    public Automovil(String fabricante, String modelo, Color color, Motor motor, Estanque estanque) {
+        this(fabricante, modelo, color, motor);
+        this.estanque = estanque;
+    }
+
+    public Automovil(String fabricante, String modelo, Color color, Motor motor, Estanque estanque, Persona conductor, Rueda[] ruedas) {
+        this(fabricante, modelo, color, motor, estanque);
+        this.conductor = conductor;
+        this.ruedas = ruedas;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getFabricante() {
+        return fabricante;
+    }
+
+    public void setFabricante(String fabricante) {
+        this.fabricante = fabricante;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public static Color getColorPatente(){
+        return colorPatente;
+    }
+
+    public static void setColorPatente(Color colorPatente){
+        Automovil.colorPatente = colorPatente;
+    }
+
+    public static int getCapacidadEstanqueEstatico() {
+        return capacidadEstanqueEstatico;
+    }
+
+    public static void setCapacidadEstanqueEstatico(int capacidadEstanqueEstatico) {
+        Automovil.capacidadEstanqueEstatico = capacidadEstanqueEstatico;
+    }
+
+    public TipoAutomovil getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoAutomovil tipo) {
+        this.tipo = tipo;
+    }
+
+    public Motor getMotor() {
+        return motor;
+    }
+
+    public void setMotor(Motor motor) {
+        this.motor = motor;
+    }
+
+    public Estanque getEstanque() {
+        if(estanque == null){
+            this.estanque = new Estanque();
+        }
+        return estanque;
+    }
+
+    public void setEstanque(Estanque estanque) {
+        this.estanque = estanque;
+    }
+
+    public Persona getConductor() {
+        return conductor;
+    }
+
+    public void setConductor(Persona conductor) {
+        this.conductor = conductor;
+    }
+
+    public Rueda[] getRuedas() {
+        return ruedas;
+    }
+
+    public void setRuedas(Rueda[] ruedas) {
+        this.ruedas = ruedas;
+    }
+
+    public Automovil addRueda(Rueda rueda){
+        if(indiceRuedas < this.ruedas.length) {
+            this.ruedas[indiceRuedas++] = rueda;
+        }
+        return this;
+    }
+
+    public String verDetalle() {
+        String detalle =  "auto.id = " + this.id +
+                "\nauto.fabricante = " + this.getFabricante() +
+                "\nauto.modelo = " + this.getModelo();
+
+        if(this.getTipo() != null) {
+            detalle += "\nauto.tipo = " + this.getTipo().getDescripcion();
+        }
+
+        detalle += "\nauto.color = " + this.color +
+                "\nauto.patenteColor = " + colorPatente;
+
+        if(this.motor != null) {
+            detalle += "\nauto.cilindrada = " + this.motor.getCilindrada();
+        }
+
+        if(conductor != null) {
+            detalle += "\nConductor subaru:" + this.getConductor();
+        }
+
+        if(getRuedas() != null) {
+            detalle += "\nRuedas del automóvil:";
+            for (Rueda r : this.getRuedas()) {
+                detalle += "\n" + r.getFabricante() + ", aro: " + r.getAro() + ", ancho: " + r.getAncho();
+            }
+        }
+
+        return detalle;
+    }
+
+    public String acelerar(int rpm) {
+        return "el auto " + this.fabricante + " acelerando a " + rpm + "rpm";
+    }
+
+    public String frenar() {
+        return this.fabricante + " " + this.modelo + " frenando!";
+    }
+
+    public String acelerarFrenar(int rpm) {
+        String acelerar = this.acelerar(rpm);
+        String frenar = this.frenar();
+        return acelerar + "\n" + frenar;
+    }
+
+    public float calcularConsumo(int km, float porcentajeBencina) {
+        return km / (this.getEstanque().getCapacidad() * porcentajeBencina);
+    }
+
+    public float calcularConsumo(int km, int porcentajeBencina) {
+        return km / (this.getEstanque().getCapacidad() * (porcentajeBencina / 100f));
+    }
+
+    public static float calcularConsumoEstatico(int km, int porcentajeBencina) {
+        return km / (Automovil.capacidadEstanqueEstatico * (porcentajeBencina / 100f));
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if(this == obj){
+            return true;
+        }
+        if(!(obj instanceof Automovil)){
+            return false;
+        }
+        Automovil a = (Automovil) obj;
+        return (this.fabricante != null && this.modelo != null
+                && this.fabricante.equals(a.getFabricante())
+                && this.modelo.equals(a.getModelo()));
+    }
+
+    @Override
+    public String toString() {
+        return this.id + " : " + fabricante + " " + modelo;
+    }
+
+    @Override
+    public int compareTo(Automovil a) {
+        return this.fabricante.compareTo(a.fabricante);
+    }
+}
+
+# Método "equals"
+
+System.out.println("son iguales? " + (nissan == nissan2)); // compara valores de objetos
+System.out.println("son iguales con equals? " + (nissan.equals(nissan2))); // compara objetos en su integridad
+
+El método equals no se limita a comparar valores como el operador "==", verifica que la definición de un primer objeto en cuanto a atributos y métodos sea la misma y ambos apunten a una misma dirección de memoria.
+
+# Operador this
+
+Representa a una instancia de la clase.
+
+Atributos y métodos estáticos
+-----------------------------
+
+private static int ultimoId;
+
+public static Color getColorPatente(){
+	return colorPatente;
+}
+
+Dentro de la clase, el atributo estático no requiere el empleo de "this". Si es un atributo público, el atributo va acompañado de la clase.
+Dentro de la clase, el método estático no requiere instanciación. Fuera de ella, el método va acompañado de la clase.
+
+
+Constantes en Java
+------------------
+
+public static final String COLOR_ROJO = "Rojo";
+
+La palabra reservada final determina el valor constante, accesible fuera de la clase como Automovil.COLOR_ROJO.
+
+
+Enums (enumeraciones)
+---------------------
+
+El enum es una definición basada en el concepto de clase, genera objetos diferenciables en una enumeración.
+
+Pueden ser valores enteros que forman un tipo de dato especializado:
+
+public enum TipoMotor {
+    DIESEL, BENCINA
+}
+
+La característica, en este caso, es que representan a un entero cada uno, desde cero.
+
+Al instanciar este enum sería:
+
+private TipoMotor tipo;
+
+Un método de una clase que pueda retornar su valor sería:
+
+public TipoMotor getTipo() {
+	return tipo; // TipoMotor.DIESEL, TipoMotor.BENCINA
+}
+
+Al igual que las clases, se puede instanciar y trabajar con métodos. Pero no se modifica ninguno de sus atributos:
+
+public enum TipoAutomovil {
+    
+	// enums:
+    SEDAN("Sedan", "Auto mediano", 4),
+    STATION_WAGON("Station Wagon", "Auto grande", 5),
+    HATCHBACK("Hatchback", "Auto compacto", 5),
+    PICKUP("Pickup", "Camioneta", 4),
+    COUPE("Coupé", "Auto pequeño", 2),
+    CONVERTIBLE("Convertible", "Auto deportivo", 2),
+    FURGON("Furgón", "Auto utilitario", 3),
+    SUV("SUV", "Todo terreno deportivo", 5);
+
+    // atributos
+    private final String nombre;
+    private final int numeroPuerta;
+    private final String descripcion;
+
+    // constructor
+    TipoAutomovil(String nombre, String descripcion, int numeroPuerta) {
+        this.nombre = nombre;
+        this.numeroPuerta = numeroPuerta;
+        this.descripcion = descripcion;
+    }
+
+	// getters:
+	
+    public String getNombre() {
+        return nombre;
+    }
+
+    public int getNumeroPuerta() {
+        return numeroPuerta;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+}
+
+Sobrecarga de métodos
+---------------------
+
+@Override
+public boolean equals(Object obj) {
+
+	if(this == obj){
+		return true;
+	}
+	if(!(obj instanceof Automovil)){
+		return false;
+	}
+	Automovil a = (Automovil) obj;
+	return (this.fabricante != null && this.modelo != null
+			&& this.fabricante.equals(a.getFabricante())
+			&& this.modelo.equals(a.getModelo()));
+}
+
+@Override
+public String toString() {
+	return this.id + " : " + fabricante + " " + modelo;
+}
+
+@Override
+public int compareTo(Automovil a) {
+	return this.fabricante.compareTo(a.fabricante);
+}
+
+Estos métodos son propios de Java, pero se han sobrecargado (o redefinido). Opcionalmente se incluye una anotación @Override para indicar que ya fueron previamente definidos.
+Lo mismo se puede hacer con métodos personalizados.
+
+Sobrecarga de constructores
+---------------------------
+
+
+public Automovil() {
+	this.id = ++ultimoId;
+	this.ruedas = new Rueda[5];
+}
+
+public Automovil(String fabricante, String modelo) {
+	this();
+	this.fabricante = fabricante;
+	this.modelo = modelo;
+}
+
+public Automovil(String fabricante, String modelo, Color color){
+	this(fabricante, modelo);
+	this.color = color;
+}
+
+public Automovil(String fabricante, String modelo, Color color, Motor motor) {
+	this(fabricante, modelo, color);
+	this.motor = motor;
+}
+
+public Automovil(String fabricante, String modelo, Color color, Motor motor, Estanque estanque) {
+	this(fabricante, modelo, color, motor);
+	this.estanque = estanque;
+}
+
+public Automovil(String fabricante, String modelo, Color color, Motor motor, Estanque estanque, Persona conductor, Rueda[] ruedas) {
+	this(fabricante, modelo, color, motor, estanque);
+	this.conductor = conductor;
+	this.ruedas = ruedas;
+}
+
+Paquetes en Java
+----------------
+
+package com.tino.app.hogar; // clase actual
+
+import com.tino.app.jardin.Perro; // clase importada
+
+import static com.tino.app.hogar.Persona.saludar; // se importa clase con métodos estáticos
+
+
+Herencia
+--------
+Una clase puede heredar atributos y métodos de otra con esta propiedad.
+
+Ejemplo:
+
+// Persona
+package org.aguzman.pooherencia;
+
+public class Persona {
+    private String nombre;
+    private String apellido;
+    private int edad;
+    private String email;
+
+    public Persona(){
+        System.out.println("Persona: inicializando constructor...");
+    }
+
+    public Persona(String nombre, String apellido){
+        this.nombre = nombre;
+        this.apellido = apellido;
+    }
+
+    public Persona(String nombre, String apellido, int edad){
+        this(nombre, apellido);
+        this.edad = edad;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public int getEdad() {
+        return edad;
+    }
+
+    public void setEdad(int edad) {
+        this.edad = edad;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String saludar(){
+        return "Hola que tal!";
+    }
+
+    @Override
+    public String toString() {
+        return "nombre='" + nombre + '\'' +
+                ", apellido='" + apellido + '\'' +
+                ", edad=" + edad +
+                ", email='" + email + '\'' +
+                ", saludo=" + this.saludar();
+    }
+}
+
+
+// Alumno
+package org.aguzman.pooherencia;
+
+public class Alumno extends Persona {
+    private String institucion;
+    private double notaMatematica;
+    private double notaCastellano;
+    private double notaHistoria;
+
+    public Alumno(){
+        System.out.println("Alumno: inicializando constructor...");
+    }
+
+    public Alumno(String nombre, String apellido){
+        super(nombre, apellido);
+    }
+
+    public Alumno(String nombre, String apellido, int edad){
+        super(nombre, apellido, edad);
+    }
+
+    public Alumno(String nombre, String apellido, int edad, String institucion){
+        super(nombre, apellido, edad);
+        this.institucion = institucion;
+    }
+
+    public Alumno(String nombre, String apellido, int edad,
+                  String institucion, double notaMatematica, double notaCastellano,
+                  double notaHistoria){
+        this(nombre, apellido, edad, institucion);
+        this.notaMatematica = notaMatematica;
+        this.notaCastellano = notaCastellano;
+        this.notaHistoria = notaHistoria;
+    }
+
+    public String getInstitucion() {
+        return institucion;
+    }
+
+    public void setInstitucion(String institucion) {
+        this.institucion = institucion;
+    }
+
+    public double getNotaMatematica() {
+        return notaMatematica;
+    }
+
+    public void setNotaMatematica(double notaMatematica) {
+        this.notaMatematica = notaMatematica;
+    }
+
+    public double getNotaCastellano() {
+        return notaCastellano;
+    }
+
+    public void setNotaCastellano(double notaCastellano) {
+        this.notaCastellano = notaCastellano;
+    }
+
+    public double getNotaHistoria() {
+        return notaHistoria;
+    }
+
+    public void setNotaHistoria(double notaHistoria) {
+        this.notaHistoria = notaHistoria;
+    }
+
+    @Override
+    public String saludar(){
+        String saludar = super.saludar();
+        return saludar + " soy un alumno y mi nombre es " + getNombre();
+    }
+
+    public double calcularPromedio(){
+        //System.out.println("calcularPromedio " + Alumno.class.getCanonicalName());
+        return (notaHistoria + notaCastellano + notaMatematica)/3;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                "\ninstitucion='" + institucion + '\'' +
+                ", notaMatematica=" + notaMatematica +
+                ", notaCastellano=" + notaCastellano +
+                ", notaHistoria=" + notaHistoria +
+                ", promedio=" + this.calcularPromedio();
+    }
+}
+
+# super
+
+Sirve para invocar un método o constructor de la clase padre.
+
+Para constructores:
+
+// Persona
+
+public Persona(String nombre, String apellido){
+	this.nombre = nombre;
+	this.apellido = apellido;
+}
+
+// Alumno
+
+public Alumno(String nombre, String apellido){
+	super(nombre, apellido); // ----> public Persona(String nombre, String apellido)
+}
+
+Para otros métodos:
+
+// Persona
+
+public String saludar(){
+	return "Hola que tal!";
+}
+
+// Alumno
+
+@Override
+public String saludar(){
+	String saludar = super.saludar(); // ---> public String saludar()
+	return saludar + " soy un alumno y mi nombre es " + getNombre();
+}
+
+
+
+# Sobrecarga
+
+Los métodos pueden ser sobrecargados en la clase hija.
+
+Constructores:
+
+// Persona
+
+public Persona(){
+	System.out.println("Persona: inicializando constructor...");
+}
+
+public Persona(String nombre, String apellido){
+	this.nombre = nombre;
+	this.apellido = apellido;
+}
+
+public Persona(String nombre, String apellido, int edad){
+	this(nombre, apellido);
+	this.edad = edad;
+}
+
+// Alumno
+
+public Alumno(){
+	System.out.println("Alumno: inicializando constructor...");
+}
+
+public Alumno(String nombre, String apellido){
+	super(nombre, apellido); // ----> public Persona(String nombre, String apellido)
+}
+
+public Alumno(String nombre, String apellido, int edad){
+	super(nombre, apellido, edad); // ----> public Persona(String nombre, String apellido, int edad)
+}
+
+public Alumno(String nombre, String apellido, int edad, String institucion){
+	super(nombre, apellido, edad); // ----> public Persona(String nombre, String apellido, int edad)
+	this.institucion = institucion;
+}
+
+// llama a otro constructor de la clase en cadena: this
+public Alumno(String nombre, String apellido, int edad,
+			  String institucion, double notaMatematica, double notaCastellano,
+			  double notaHistoria){
+	this(nombre, apellido, edad, institucion); // ----> public Alumno(String nombre, String apellido, int edad, String institucion)
+	this.notaMatematica = notaMatematica;
+	this.notaCastellano = notaCastellano;
+	this.notaHistoria = notaHistoria;
+}
+
+Otros métodos:
+
+
+// Persona
+
+public String saludar(){
+	return "Hola que tal!";
+}
+
+// Alumno
+
+@Override
+public String saludar(){
+	String saludar = super.saludar(); // ---> public String saludar()
+	return saludar + " soy un alumno y mi nombre es " + getNombre();
+}
+
+Se recomienda emplear la anotación @Override para indicar que se está sobrecargando
+
+# Palabra "final"
+
+* Restringe la herencia de clases, esto es, la clase que emplea "final" en su definición no puede tener clases hijas.
+* Impide que un método sea heredado por una clase hija.
+
+Ejemplo:
+
+public final class AlumnoInternacional extends Alumno // ---->  esta clase no puede tener clases hijas
+
+# Sobreescritura/sobrecarga de toString()
+
+// definición original en la clase Object:
+
+public String toString() {
+	return getClass().getName() + "@" + Integer.toHexString(hashCode());
+}
+
+// redefinición en la clase Persona
+
+@Override
+public String toString() {
+	return "nombre='" + nombre + '\'' +
+			", apellido='" + apellido + '\'' +
+			", edad=" + edad +
+			", email='" + email + '\'' +
+			", saludo=" + this.saludar();
+}
+
+// redefinición en la clase Alumno
+
+@Override
+public String toString() {
+	return super.toString() +
+			"\ninstitucion='" + institucion + '\'' +
+			", notaMatematica=" + notaMatematica +
+			", notaCastellano=" + notaCastellano +
+			", notaHistoria=" + notaHistoria +
+			", promedio=" + this.calcularPromedio();
+}
+
+// redefinición en la clase Profesor
+
+@Override
+public String toString() {
+	return super.toString() +
+			"\nasignatura='" + asignatura;
+}
+
+// casting de objetos
+
+package com.almacen.productos;
+
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Producto[] productos = new Producto[8];
+
+        // 2 lácteos
+        Lacteo leche, yogurt;
+        leche = new Lacteo("Gloria", (double)1.25, 1, 25);
+        yogurt = new Lacteo("Toni", (double)2, 2, 30);
+
+        // 2 frutas
+        Fruta naranja, manzana;
+        naranja = new Fruta("naranja", (double) 2, 2, "anaranjado");
+        manzana = new Fruta("manzana", (double) 3, 2, "rojo");
+
+        // 2 productos de limpieza
+        Limpieza detergente, lejia;
+        detergente = new Limpieza("Ace", 2.25,"sulfonato de sodio", 1.25);
+        lejia = new Limpieza("Clorox", 1.50, "hipoclorito de sodio", 1.00);
+
+        // 2 productos no perecibles
+        NoPerecible arroz, frejolConTocino;
+        arroz = new NoPerecible("Paisana", 3.25, 20, 30);
+        frejolConTocino = new NoPerecible("Facundo", 1.30, 1, 5);
+
+        productos[0] = leche;
+        productos[1] = yogurt;
+        productos[2] = naranja;
+        productos[3] = manzana;
+        productos[4] = detergente;
+        productos[5] = lejia;
+        productos[6] = arroz;
+        productos[7] = frejolConTocino;
+
+        System.out.println("Lista de productos:");
+        for (int i = 0; i < 8; i++) {
+            imprimir(productos[i]);
+        }
+    }
+
+    public static void imprimir(Producto producto){
+        System.out.println("Nombre: " + producto.getNombre());
+        System.out.println("Precio: " + producto.getPrecio());
+        if(producto instanceof Lacteo){
+            System.out.println("Cantidad: " + ((Lacteo) producto).getCantidad()); // un elemento del array de productos se castea a clase hijo para acceder a sus métodos
+            System.out.println("Proteínas: " + ((Lacteo) producto).getProteinas()); // un elemento del array de productos se castea a clase hijo para acceder a sus métodos
+        } else if (producto instanceof Fruta){
+            System.out.println("Peso: " + ((Fruta) producto).getPeso()); // un elemento del array de productos se castea a clase hijo para acceder a sus métodos
+            System.out.println("Color: " + ((Fruta) producto).getColor()); // un elemento del array de productos se castea a clase hijo para acceder a sus métodos
+        } else if (producto instanceof Limpieza) {
+            System.out.println("Componente activo: " + ((Limpieza) producto).getComponentes()); // un elemento del array de productos se castea a clase hijo para acceder a sus métodos
+            System.out.println("Litros: " + ((Limpieza) producto).getLitros()); // un elemento del array de productos se castea a clase hijo para acceder a sus métodos
+        } else if (producto instanceof NoPerecible) {
+            System.out.println("Contenido: " + ((NoPerecible) producto).getContenido()); // un elemento del array de productos se castea a clase hijo para acceder a sus métodos
+            System.out.println("Calorías: " + ((NoPerecible) producto).getCalorias()); // un elemento del array de productos se castea a clase hijo para acceder a sus métodos
+        }
+    }
+}
+
+Clases abstractas
+-----------------
+
+Son clases que siempre están a nivel superior de otras, como clases padre, y son base de las clases hija. Debido a que son abstractas, lo que implica que son conceptos intangibles y solo perceptibles en clases hijas, aquellas no pueden ser instanciadas. Por ejemplo, una clase Comida no puede ser instanciada, pero si Comida se manifiesta en clases hijas como Desayuno, Almuerzo, Cena, Postre, etcétera, cada una de éstas últimas puede ser instanciada.
+
+Otra característica importante es que pueden tener uno o más métodos abstractos. Un método abstracto es el que no se implementa en la clase abstracta, solo se declara, y tales métodos son solo implementables en clases hijas.
+
+Ejemplo:
+
+package org.aguzman.pooclasesabstractas.form.elementos;
+
+import org.aguzman.pooclasesabstractas.form.validador.LargoValidador;
+import org.aguzman.pooclasesabstractas.form.validador.Validador;
+import org.aguzman.pooclasesabstractas.form.validador.mensaje.MensajeFormateable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+abstract public class ElementoForm {
+
+    protected String valor;
+    protected String nombre;
+
+    private List<Validador> validadores;
+    private List<String> errores;
+
+    public ElementoForm() {
+        this.validadores = new ArrayList<>();
+        this.errores = new ArrayList<>();
+    }
+
+    public ElementoForm(String nombre) {
+        this();
+        this.nombre = nombre;
+    }
+
+    public ElementoForm addValidador(Validador validador){
+        this.validadores.add(validador);
+        return this;
+    }
+
+    public List<String> getErrores() {
+        return errores;
+    }
+
+    public void setValor(String valor) {
+        this.valor = valor;
+    }
+
+    public boolean esValido(){
+        for(Validador v: validadores){
+            if(!v.esValido(this.valor)){
+                if(v instanceof MensajeFormateable) {
+                    this.errores.add(((MensajeFormateable) v).getMensajeFormateado(nombre));
+                } else {
+                    this.errores.add(String.format(v.getMensaje(), nombre));
+                }
+            }
+        }
+        return this.errores.isEmpty();
+    }
+
+    abstract public String dibujarHtml();
+}
+
+package org.aguzman.pooclasesabstractas.form.elementos;
+
+public class InputForm extends ElementoForm {
+
+    private String tipo = "text";
+
+    public InputForm(String nombre) {
+        super(nombre);
+    }
+
+    public InputForm(String nombre, String tipo) {
+        super(nombre);
+        this.tipo = tipo;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    @Override
+    public String dibujarHtml() {
+        return "<input type=\"" + this.tipo
+                + "\" name=\"" + this.nombre
+                + "\" value=\"" + this.valor + "\">";
+    }
+}
+
+
+Interfaces
+----------
+La interfaz se define como todo elemento de definición de comportamientos afines que involucra a una o más clases. Todo ello asegura reutilización de código y no depender únicamente de la herencia de clases abstractas.
+
+Ejemplo:
+
+package org.aguzman.poointerfaces.imprenta.modelo;
+
+public interface Imprimible {
+
+    String TEXTO_DEFECTO = "Imprimiendo un valor por defecto";
+
+    default String imprimir(){
+        return TEXTO_DEFECTO;
+    }
+
+    static void imprimir(Imprimible imprimible){
+        System.out.println(imprimible.imprimir());
+    }
+}
+
+# Sobrecarga de un método de interfaz
+
+default String imprimir(){
+	return TEXTO_DEFECTO;
+}
+
+static void imprimir(Imprimible imprimible){ //  aquí se hace una sobreescritura tratando a imprimible como una instancia de Imprimible
+	System.out.println(imprimible.imprimir());
+}
+
+
+# Herencia múltiple con interfaces
+
+Mientras que en otros lenguajes la herencia múltiple podría hacerse con clases, en Java debe aplicarse este principio en interfaces.
+
+Por ejemplo:
+
+public class ClienteListRepositorio implements OrdenableRepositorio, PaginableRepositorio, CrudRepositorio, ContableRepositorio // se implementa varias interfaces
+
+Se podría crear una interfaz que herede a las que se citan anteriormente:
+
+public interface OrdenablePaginableCrudRepositorio extends OrdenableRepositorio,
+                        PaginableRepositorio, CrudRepositorio, ContableRepositorio {
+}
+
+Y se podría, con ello, redefinir la clase ClienteListRepositorio así:
+
+public class ClienteListRepositorio implements OrdenablePaginableCrudRepositorio // la interfaz OrdenablePaginableCrudRepositorio representa a las otras 4 declaradas previamente
+
+
+Manejo de excepciones
+---------------------
+Una excepción es todo evento que genera una interrupción abrupta de la ejecución de un programa. Mientras que en un error ocurre un incumplimiento de una condición y el programa puede seguir su curso, una excepción ocurre cuando los datos de entrada no pueden ser procesados por alguna razón en particular.
+
+Las excepciones pueden ser controladas o no controladas, esto es, algunas ocurren por una falla en el desarrollo (no controladas) y las demás ocurren en errores claves.
+
+En Java, las excepciones controladas se manejan de dos formas:
+
+* Forma tradicional
+
+try{
+    // lógica del flujo normal
+} catch(Exception e) {
+    // acciones cuando se captura una excepción controlada
+} finally {
+    // bloque opcional que se ejecuta independientemente de si se captura una excepción o no
+}
+
+* Desde la definición de un método de la clase
+
+public double dividir(int numerador, int divisor) throws DivisionPorZeroException{
+	if(divisor == 0){
+		throw new DivisionPorZeroException("no se puede dividir por cero!");
+	}
+	return numerador/(double)divisor;
+}
+
+public double dividir(String numerador, String divisor)
+		throws DivisionPorZeroException, FormatoNumeroException {
+	try {
+		int num = Integer.parseInt(numerador);
+		int div = Integer.parseInt(divisor);
+		return this.dividir(num, div);
+	} catch (NumberFormatException e){
+		throw new FormatoNumeroException("debe ingresar un número en el numerador y divisor");
+	}
+}
+
+Las clases Exception y sus derivadas pueden heredarse y se pueden sobreescribir sus métodos:
+
+public class DivisionPorZeroException extends Exception {
+    public DivisionPorZeroException(String mensaje){
+        super(mensaje);
+    }
+}
+
+
+
+
+

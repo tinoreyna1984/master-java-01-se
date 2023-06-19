@@ -1,0 +1,458 @@
+Java - Colecciones (Java SE 5+)
+*******************************
+
+Hay dos tipos de colecciones en Java: tipos Collection y tipo Map.
+
+Tipos Collection:
+* Tipo List: ArrayList, LinkedList, Vector.
+* Tipo Set: HashSet, TreeSet, LinkedHashSet.
+
+Tipos Map:
+HashMap, LinkedHashMap, TreeMap
+
+List
+====
+
+ArrayList
+---------
+ArrayList es una implementación de la interfaz List en Java. Almacena elementos en una estructura de matriz dinámica, lo que permite un acceso rápido a los elementos por su índice.
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArrayListExample {
+    public static void main(String[] args) {
+        // Crear un ArrayList de cadenas
+        List<String> list = new ArrayList<>();
+
+        // Agregar elementos al ArrayList
+        list.add("Manzana");
+        list.add("Banana");
+        list.add("Naranja");
+
+        // Obtener el tamaño del ArrayList
+        int tamaño = list.size();
+        System.out.println("Tamaño del ArrayList: " + tamaño);
+
+        // Acceder a un elemento por su índice
+        String primerElemento = list.get(0);
+        System.out.println("Primer elemento: " + primerElemento);
+
+        // Modificar un elemento por su índice
+        list.set(2, "Piña");
+
+        // Verificar si el ArrayList contiene un elemento específico
+        boolean contieneManzana = list.contains("Manzana");
+        System.out.println("Contiene 'Manzana': " + contieneManzana);
+
+        // Eliminar un elemento por su índice
+        list.remove(1);
+
+        // Recorrer el ArrayList utilizando un bucle for-each
+        for (String elemento : list) {
+            System.out.println(elemento);
+        }
+    }
+}
+
+LinkedList
+----------
+LinkedList es otra implementación de la interfaz List en Java. Almacena elementos en una lista doblemente enlazada, lo que permite un acceso eficiente tanto al inicio como al final de la lista.
+
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListExample {
+    public static void main(String[] args) {
+        // Crear una LinkedList de enteros
+        List<Integer> list = new LinkedList<>();
+
+        // Agregar elementos al LinkedList
+        list.add(5);
+        list.add(2);
+        list.add(8);
+
+        // Verificar si el LinkedList está vacío
+        boolean vacío = list.isEmpty();
+        System.out.println("LinkedList vacío: " + vacío);
+
+        // Obtener el primer y último elemento del LinkedList
+        Integer primerElemento = list.getFirst();
+        Integer últimoElemento = list.getLast();
+        System.out.println("Primer elemento: " + primerElemento);
+        System.out.println("Último elemento: " + últimoElemento);
+
+        // Eliminar el primer y último elemento del LinkedList
+        list.removeFirst();
+        list.removeLast();
+
+        // Recorrer el LinkedList en orden inverso utilizando un bucle for-each
+        for (Integer elemento : list.descendingList()) {
+            System.out.println(elemento);
+        }
+    }
+}
+
+Vector
+------
+Vector es una implementación sincronizada de la interfaz List en Java. Almacena elementos en una estructura de matriz dinámica similar a ArrayList, pero es segura para subprocesos.
+
+import java.util.Vector;
+import java.util.List;
+
+public class VectorExample {
+    public static void main(String[] args) {
+        // Crear un Vector de cadenas
+        List<String> vector = new Vector<>();
+
+        // Agregar elementos al Vector
+        vector.add("Manzana");
+        vector.add("Banana");
+        vector.add("Naranja");
+
+        // Verificar si el Vector contiene un elemento específico
+        boolean contieneNaranja = vector.contains("Naranja");
+        System.out.println("Contiene 'Naranja': " + contieneNaranja);
+
+        // Obtener el tamaño del Vector
+        int tamaño = vector.size();
+        System.out.println("Tamaño del Vector: " + tamaño);
+
+        // Eliminar un elemento por su índice
+        vector.remove(1);
+
+        // Recorrer el Vector utilizando un bucle for-each
+        for (String elemento : vector) {
+            System.out.println(elemento);
+        }
+    }
+}
+
+Set
+===
+
+HashSet
+-------
+HashSet es una implementación de la interfaz Set en Java. Almacena elementos sin un orden específico y no permite duplicados. Utiliza la función hashcode() para almacenar y recuperar elementos de manera eficiente.
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class HashSetExample {
+    public static void main(String[] args) {
+        // Crear un HashSet de cadenas
+        Set<String> set = new HashSet<>();
+
+        // Agregar elementos al HashSet
+        set.add("Manzana");
+        set.add("Banana");
+        set.add("Naranja");
+
+        // Verificar si un elemento existe en el HashSet
+        boolean contieneManzana = set.contains("Manzana");
+        System.out.println("Contiene Manzana: " + contieneManzana);
+
+        // Eliminar un elemento del HashSet
+        set.remove("Banana");
+
+        // Obtener el tamaño del HashSet
+        int tamaño = set.size();
+        System.out.println("Tamaño del HashSet: " + tamaño);
+
+        // Vaciar el HashSet
+        set.clear();
+
+        // Verificar si el HashSet está vacío
+        boolean vacío = set.isEmpty();
+        System.out.println("HashSet vacío: " + vacío);
+    }
+}
+
+TreeSet
+-------
+TreeSet es una implementación de la interfaz SortedSet en Java. Almacena elementos en orden ascendente o descendente, según el orden natural de los elementos o un comparador proporcionado por el usuario. No permite duplicados.
+
+import java.util.TreeSet;
+import java.util.Set;
+
+public class TreeSetExample {
+    public static void main(String[] args) {
+        // Crear un TreeSet de enteros en orden ascendente
+        Set<Integer> set = new TreeSet<>();
+
+        // Agregar elementos al TreeSet
+        set.add(5);
+        set.add(2);
+        set.add(8);
+
+        // Obtener el primer y último elemento del TreeSet
+        Integer primerElemento = set.first();
+        Integer últimoElemento = set.last();
+        System.out.println("Primer elemento: " + primerElemento);
+        System.out.println("Último elemento: " + últimoElemento);
+
+        // Obtener un subconjunto de elementos dentro de un rango dado
+        Set<Integer> subconjunto = ((TreeSet<Integer>) set).subSet(2, 8);
+        System.out.println("Subconjunto: " + subconjunto);
+
+        // Eliminar todos los elementos mayores a un valor dado
+        set.removeIf(elemento -> elemento > 5);
+        System.out.println("TreeSet después de eliminar elementos: " + set);
+    }
+}
+
+LinkedHashSet
+-------------
+LinkedHashSet es una implementación de la interfaz Set en Java que mantiene el orden de inserción de los elementos. Combina las características de HashSet y LinkedList, lo que significa que los elementos se almacenan sin duplicados y se pueden recorrer en el orden en que se insertaron.
+
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+public class LinkedHashSetExample {
+    public static void main(String[] args) {
+        // Crear un LinkedHashSet de caracteres
+        Set<Character> set = new LinkedHashSet<>();
+
+        // Agregar elementos al LinkedHashSet
+        set.add('A');
+        set.add('B');
+        set.add('C');
+
+        // Verificar si el LinkedHashSet contiene un elemento específico
+        boolean contieneA = set.contains('A');
+        System.out.println("Contiene 'A': " + contieneA);
+
+        // Eliminar un elemento del LinkedHashSet
+        set.remove('B');
+
+        // Recorrer el LinkedHashSet en orden de inserción
+        for (Character elemento : set) {
+            System.out.println(elemento);
+        }
+    }
+}
+
+
+Map
+===
+
+HashMap
+-------
+HashMap es una implementación de la interfaz Map en Java. Almacena pares clave-valor sin ningún orden específico. Permite un acceso rápido a los valores a través de su clave.
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class HashMapExample {
+    public static void main(String[] args) {
+        // Crear un HashMap de cadenas y enteros
+        Map<String, Integer> map = new HashMap<>();
+
+        // Agregar pares clave-valor al HashMap
+        map.put("Manzana", 5);
+        map.put("Banana", 3);
+        map.put("Naranja", 8);
+
+        // Obtener el valor asociado a una clave
+        Integer cantidadManzanas = map.get("Manzana");
+        System.out.println("Cantidad de manzanas: " + cantidadManzanas);
+
+        // Verificar si una clave existe en el HashMap
+        boolean contieneBanana = map.containsKey("Banana");
+        System.out.println("Contiene 'Banana': " + contieneBanana);
+
+        // Recorrer el HashMap utilizando un bucle for-each en los pares clave-valor
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            String clave = entry.getKey();
+            Integer valor = entry.getValue();
+            System.out.println(clave + ": " + valor);
+        }
+
+        // Eliminar un par clave-valor del HashMap
+        map.remove("Naranja");
+
+        // Verificar si el HashMap está vacío
+        boolean vacío = map.isEmpty();
+        System.out.println("HashMap vacío: " + vacío);
+    }
+}
+
+LinkedHashMap
+-------------
+LinkedHashMap es una implementación de la interfaz Map en Java. Almacena pares clave-valor en el orden de inserción. Combina las características de HashMap y LinkedList.
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class LinkedHashMapExample {
+    public static void main(String[] args) {
+        // Crear un LinkedHashMap de cadenas y enteros
+        Map<String, Integer> map = new LinkedHashMap<>();
+
+        // Agregar pares clave-valor al LinkedHashMap
+        map.put("Manzana", 5);
+        map.put("Banana", 3);
+        map.put("Naranja", 8);
+
+        // Obtener el valor asociado a una clave
+        Integer cantidadManzanas = map.get("Manzana");
+        System.out.println("Cantidad de manzanas: " + cantidadManzanas);
+
+        // Recorrer el LinkedHashMap en el orden de inserción utilizando un bucle for-each en los pares clave-valor
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            String clave = entry.getKey();
+            Integer valor = entry.getValue();
+            System.out.println(clave + ": " + valor);
+        }
+    }
+}
+
+TreeMap
+-------
+TreeMap es una implementación de la interfaz SortedMap en Java. Almacena pares clave-valor en un orden ascendente o descendente, basado en el orden natural de las claves o un comparador proporcionado.
+
+import java.util.TreeMap;
+import java.util.Map;
+
+public class TreeMapExample {
+    public static void main(String[] args) {
+        // Crear un TreeMap de cadenas y enteros en orden ascendente
+        Map<String, Integer> map = new TreeMap<>();
+
+        // Agregar pares clave-valor al TreeMap
+        map.put("Manzana", 5);
+        map.put("Banana", 3);
+        map.put("Naranja", 8);
+
+        // Obtener el primer y último par clave-valor del TreeMap
+        Map.Entry<String, Integer> primerEntry = map.firstEntry();
+        Map.Entry<String, Integer> últimoEntry = map.lastEntry();
+        System.out.println("Primer par clave-valor: " + primerEntry.getKey() + ": " + primerEntry.getValue());
+        System.out.println("Último par clave-valor: " + últimoEntry.getKey() + ": " + últimoEntry.getValue());
+
+        // Obtener un submapa de claves dentro de un rango dado
+        Map<String, Integer> subMap = ((TreeMap<String, Integer>) map).subMap("Banana", "Naranja");
+        System.out.println("Submapa: " + subMap);
+
+        // Eliminar todos los pares clave-valor mayores a una clave dada
+        map.tailMap("Banana", false).clear();
+        System.out.println("TreeMap después de eliminar pares clave-valor: " + map);
+    }
+}
+
+
+Implementación de la interfaz Comparable
+========================================
+
+Tomar el siguiente ejemplo:
+
+public class Alumno implements Comparable<Alumno> {
+    private String nombre;
+    private int edad;
+
+    public Alumno(String nombre, int edad) {
+        this.nombre = nombre;
+        this.edad = edad;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public int getEdad() {
+        return edad;
+    }
+
+    @Override
+    public int compareTo(Alumno otroAlumno) {
+        // Comparar por nombre
+        int comparacionNombre = this.nombre.compareTo(otroAlumno.nombre);
+        if (comparacionNombre != 0) {
+            return comparacionNombre;
+        }
+
+        // Comparar por edad
+        return Integer.compare(this.edad, otroAlumno.edad);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Alumno otroAlumno = (Alumno) obj;
+        return edad == otroAlumno.edad && nombre.equals(otroAlumno.nombre);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nombre, edad);
+    }
+
+    @Override
+    public String toString() {
+        return "Alumno [nombre=" + nombre + ", edad=" + edad + "]";
+    }
+}
+En este ejemplo, la clase Alumno implementa la interfaz Comparable<Alumno>, lo que significa que proporciona una forma de comparar instancias de Alumno entre sí. La implementación del método compareTo() se utiliza para definir el criterio de comparación.
+
+En este caso, hemos decidido comparar a los alumnos primero por su nombre y luego por su edad. El método compareTo() compara el nombre del Alumno actual (this) con el nombre del Alumno pasado como argumento (otroAlumno). Si los nombres son diferentes, devuelve el resultado de la comparación de los nombres. Si los nombres son iguales, se realiza una comparación adicional por edad, utilizando Integer.compare().
+
+También hemos implementado los métodos equals() y hashCode() para asegurarnos de que el método compareTo() y otras operaciones relacionadas con la igualdad funcionen correctamente.
+
+Aquí hay un ejemplo de cómo se podría utilizar la clase Alumno y su implementación de Comparable:
+
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List<Alumno> listaAlumnos = new ArrayList<>();
+        listaAlumnos.add(new Alumno("Juan", 20));
+        listaAlumnos.add(new Alumno("María", 18));
+        listaAlumnos.add(new Alumno("Pedro", 19));
+
+        System.out.println("Lista de Alumnos (antes de ordenar):");
+        for (Alumno alumno : listaAlumnos) {
+            System.out.println(alumno);
+        }
+
+        Collections.sort(listaAlumnos);
+
+        System.out.println("\nLista de Alumnos (después de ordenar por nombre y edad):");
+        for (Alumno alumno : listaAlumnos) {
+            System.out.println(alumno);
+        }
+    }
+}
+En este ejemplo, creamos una lista de alumnos, agregamos algunos alumnos a la lista y luego utilizamos Collections.sort() para ordenar la lista según el criterio definido en el método compareTo(). En este caso, la lista se ordenará primero por nombre y luego por edad.
+
+Al ejecutar el programa, verás que la lista de alumnos se muestra primero sin ordenar y luego se muestra después de ordenarla por nombre y edad.
+
+Tener en cuenta que al implementar la interfaz Comparable, estás definiendo un criterio de ordenación natural para los objetos de la clase Alumno. La implementación de compareTo() puede ser desarrollada de forma personalizable para definir un orden específico para los objetos de la clase Alumno.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

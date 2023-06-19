@@ -1,0 +1,588 @@
+Java -Java 8
+************
+
+Operadores Lambda - Funciones de flecha
+=======================================
+
+Expresiones comunes:
+
+1. Sintaxis básica: Una expresión lambda se compone de una lista de parámetros, una flecha (->) y un cuerpo. Aquí hay un ejemplo de una expresión lambda que suma dos números:
+
+(int x, int y) -> x + y
+
+2. Interfaces funcionales: Las expresiones lambda se utilizan en el contexto de interfaces funcionales, que son interfaces con un solo método abstracto. Aquí hay un ejemplo usando la interfaz funcional Runnable:
+
+Runnable runnable = () -> System.out.println("Hola, mundo!");
+
+3. Inferencia de tipos: En muchos casos, el compilador puede inferir los tipos de los parámetros en una expresión lambda. Esto hace que el código sea más conciso. Por ejemplo:
+
+Comparator<String> comparator = (s1, s2) -> s1.compareTo(s2);
+
+4. Referencias a métodos: Además de las expresiones lambda, Java 8 introdujo las referencias a métodos. Estas permiten referenciar directamente un método existente en lugar de escribir un cuerpo de expresión lambda. Aquí hay un ejemplo que utiliza una referencia a un método estático:
+
+Function<Integer, String> converter = Integer::toString;
+
+5. Uso en API funcional: Las expresiones lambda se utilizan con frecuencia al trabajar con API funcional, como Stream, para realizar operaciones en colecciones de elementos. Aquí hay un ejemplo que utiliza Stream y una expresión lambda para filtrar números pares:
+
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);
+List<Integer> evenNumbers = numbers.stream()
+                                    .filter(n -> n % 2 == 0)
+                                    .collect(Collectors.toList());
+									
+En este ejemplo, la expresión lambda (n -> n % 2 == 0) se utiliza como predicado para filtrar los números pares.
+
+
+Implementaciones a Consumer y BiConsumer
+========================================
+
+Las interfaces Consumer y BiConsumer permiten generar callbacks que simplifiquen la lógica de una función, haciéndola declarativa con la notación lambda:
+
+// Consumer
+
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+Consumer<Integer> printer = num -> System.out.println(num); // creo el callback con notación lambda y lo guardo en el consumidor printer
+
+numbers.forEach(printer); // paso printer como parámetro. Cada elemento de la lista pasa como parámetro al método accept de printer
+
+// BiConsumer: trabaja con 2 argumentos
+
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+BiConsumer<Integer, Integer> pairPrinter = (num1, num2) -> System.out.println(num1 + ", " + num2);
+
+for (int i = 0; i < numbers.size() - 1; i++) {
+    int current = numbers.get(i);
+    int next = numbers.get(i + 1);
+    pairPrinter.accept(current, next); // paso los parámetros previos
+}
+
+Streams
+=======
+
+La programación funcional en Java 8 se fortaleció con la introducción de la interfaz `Stream` y sus métodos. Estos métodos permiten realizar operaciones funcionales en colecciones de elementos. A continuación, se explican brevemente algunos de los métodos más comunes y se proporcionan ejemplos sencillos para ilustrar su uso:
+
+1. `map()`: Transforma cada elemento de un `Stream` en otro elemento aplicando una función.
+
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+List<Integer> squaredNumbers = numbers.stream()
+                                      .map(num -> num * num)
+                                      .collect(Collectors.toList());
+
+En este ejemplo, la función `map()` se utiliza para calcular el cuadrado de cada número en el `Stream` original.
+
+2. `anyMatch()`: Verifica si algún elemento cumple una condición.
+
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+boolean containsEven = numbers.stream()
+                              .anyMatch(num -> num % 2 == 0);
+
+En este caso, `anyMatch()` se utiliza para verificar si el `Stream` contiene algún número par.
+
+3. `filter()`: Filtra los elementos según una condición.
+
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+List<Integer> evenNumbers = numbers.stream()
+                                   .filter(num -> num % 2 == 0)
+                                   .collect(Collectors.toList());
+
+En este ejemplo, `filter()` se usa para seleccionar solo los números pares del `Stream` original.
+
+4. `distinct()`: Elimina los elementos duplicados.
+
+List<Integer> numbers = Arrays.asList(1, 2, 2, 3, 4, 4, 5);
+List<Integer> uniqueNumbers = numbers.stream()
+                                     .distinct()
+                                     .collect(Collectors.toList());
+
+En este caso, `distinct()` se utiliza para eliminar los elementos duplicados del `Stream`.
+
+5. `reduce()`: Combina todos los elementos en un solo resultado.
+
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+int sum = numbers.stream()
+                 .reduce(0, (a, b) -> a + b);
+
+En este ejemplo, `reduce()` se usa para calcular la suma de todos los elementos en el `Stream`.
+
+6. `sum()`: Calcula la suma de los elementos numéricos.
+
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+int sum = numbers.stream()
+                 .mapToInt(Integer::intValue)
+                 .sum();
+
+En este caso, `sum()` se utiliza para calcular la suma de todos los números en el `Stream`.
+
+7. `summaryStatistics()`: Calcula estadísticas resumidas de los elementos numéricos.
+
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+IntSummaryStatistics statistics = numbers.stream()
+                                         .mapToInt(Integer::intValue)
+                                         .summaryStatistics();
+int min = statistics.getMin();
+int max = statistics.getMax();
+double average = statistics.getAverage();
+
+En este ejemplo, `summaryStatistics()` se utiliza para obtener estadísticas resumidas, como el valor mínimo, máximo y promedio del `Stream` numérico.
+
+8. `sort()`: Ordena los elementos en orden natural o utilizando un comparador.
+
+List<Integer> numbers
+
+ = Arrays.asList(5, 2, 3, 1, 4);
+List<Integer> sortedNumbers = numbers.stream()
+                                     .sorted()
+                                     .collect(Collectors.toList());
+
+En este caso, `sort()` se utiliza para ordenar los números en orden ascendente.
+
+9. `mapToInt()`: Transforma los elementos en un `IntStream`.
+
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+IntStream intStream = numbers.stream()
+                             .mapToInt(Integer::intValue);
+
+En este ejemplo, `mapToInt()` se utiliza para convertir el `Stream` de `Integer` en un `IntStream`.
+
+10. `flatMap()`: Combina los elementos de varios `Stream` en uno solo.
+
+List<List<Integer>> numberGroups = Arrays.asList(
+    Arrays.asList(1, 2, 3),
+    Arrays.asList(4, 5, 6),
+    Arrays.asList(7, 8, 9)
+);
+List<Integer> flattenedList = numberGroups.stream()
+                                          .flatMap(List::stream)
+                                          .collect(Collectors.toList());
+
+En este caso, `flatMap()` se utiliza para combinar los elementos de varias listas en una sola lista plana.
+
+11. `parallel()`: Realiza operaciones en paralelo en lugar de forma secuencial.
+
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+int sum = numbers.parallelStream()
+                 .reduce(0, (a, b) -> a + b);
+
+En este ejemplo, `parallelStream()` se utiliza para realizar la operación de suma en paralelo, lo que puede mejorar el rendimiento en situaciones adecuadas.
+
+Estos ejemplos ilustran cómo se pueden utilizar algunos de los métodos disponibles en `Stream` para realizar operaciones funcionales en Java 8. La programación funcional proporciona una forma más concisa, expresiva y legible de trabajar con colecciones de datos y permite escribir código más claro y mantenible.
+
+
+Optional
+========
+
+La programación funcional en Java 8 se introdujo para permitir el uso de funciones como ciudadanos de primera clase y para proporcionar métodos de alto nivel para manipular datos de manera más concisa y legible. Una de las clases clave en Java 8 para la programación funcional es `Optional`, que se utiliza para representar un valor que puede ser opcionalmente nulo.
+
+La clase `Optional` proporciona varios métodos útiles para trabajar con valores opcionales. Aquí hay una explicación breve de algunos de ellos:
+
+1. `orElse(T other)`: Devuelve el valor encapsulado en el `Optional` o el valor proporcionado como argumento si el `Optional` es nulo.
+
+
+Optional<String> optionalValue = Optional.ofNullable("Hola");
+String result = optionalValue.orElse("Valor predeterminado");
+System.out.println(result);  // Salida: Hola
+
+Optional<String> optionalNull = Optional.ofNullable(null);
+String result2 = optionalNull.orElse("Valor predeterminado");
+System.out.println(result2);  // Salida: Valor predeterminado
+
+
+2. `orElseGet(Supplier<? extends T> other)`: Similar a `orElse`, pero en lugar de un valor directo, acepta un `Supplier` que genera y devuelve el valor si el `Optional` es nulo.
+
+
+Optional<String> optionalValue = Optional.ofNullable("Hola");
+String result = optionalValue.orElseGet(() -> "Valor predeterminado");
+System.out.println(result);  // Salida: Hola
+
+Optional<String> optionalNull = Optional.ofNullable(null);
+String result2 = optionalNull.orElseGet(() -> "Valor predeterminado");
+System.out.println(result2);  // Salida: Valor predeterminado
+
+
+3. `orElseThrow(Supplier<? extends X> exceptionSupplier)`: Devuelve el valor encapsulado en el `Optional`, o lanza la excepción proporcionada por el `Supplier` si el `Optional` es nulo.
+
+
+Optional<String> optionalValue = Optional.ofNullable("Hola");
+String result = optionalValue.orElseThrow(() -> new IllegalArgumentException("Valor nulo no permitido"));
+System.out.println(result);  // Salida: Hola
+
+Optional<String> optionalNull = Optional.ofNullable(null);
+String result2 = optionalNull.orElseThrow(() -> new IllegalArgumentException("Valor nulo no permitido"));  // Lanza la excepción
+
+
+4. `map(Function<? super T,? extends U> mapper)`: Aplica la función proporcionada al valor encapsulado en el `Optional` y devuelve un nuevo `Optional` que contiene el resultado de la función.
+
+
+Optional<String> optionalValue = Optional.ofNullable("Hola");
+Optional<Integer> lengthOptional = optionalValue.map(String::length);
+System.out.println(lengthOptional.orElse(0));  // Salida: 4
+
+Optional<String> optionalNull = Optional.ofNullable(null);
+Optional<Integer> lengthOptional2 = optionalNull.map(String::length);
+System.out.println(lengthOptional2.orElse(0));  // Salida: 0
+
+
+5. `filter(Predicate<? super T> predicate)`: Devuelve el `Optional` actual si el valor encapsulado cumple con el predicado proporcionado, de lo contrario, devuelve un `Optional` vacío.
+
+
+Optional<String> optionalValue = Optional.ofNullable("Hola");
+Optional<String> filteredOptional = optionalValue.filter(s -> s.length() > 3);
+System.out.println(filteredOptional.orElse("No cumple el predicado"));  // Salida: Hola
+
+Optional<String> optionalNull = Optional.ofNullable(null);
+Optional<String> filteredOptional
+
+2 = optionalNull.filter(s -> s.length() > 3);
+System.out.println(filteredOptional2.orElse("No cumple el predicado"));  // Salida: No cumple el predicado
+
+
+6. `flatMap(Function<? super T,Optional<U>> mapper)`: Aplica la función proporcionada al valor encapsulado en el `Optional` y devuelve el resultado de la función, que también es un `Optional`.
+
+
+Optional<String> optionalValue = Optional.ofNullable("Hola");
+Optional<Integer> lengthOptional = optionalValue.flatMap(s -> Optional.ofNullable(s.length()));
+System.out.println(lengthOptional.orElse(0));  // Salida: 4
+
+Optional<String> optionalNull = Optional.ofNullable(null);
+Optional<Integer> lengthOptional2 = optionalNull.flatMap(s -> Optional.ofNullable(s.length()));
+System.out.println(lengthOptional2.orElse(0));  // Salida: 0
+
+
+Estos métodos de `Optional` en Java 8 son solo una parte de la programación funcional disponible en el lenguaje, pero proporcionan una introducción útil a los conceptos básicos de la manipulación de valores opcionales de manera funcional.
+
+
+Fecha y Hora
+============
+
+La programación funcional en Java 8 es un enfoque de programación que se basa en el uso de funciones como ciudadanos de primera clase y expresiones lambda para escribir código más conciso, modular y fácil de entender. Las clases de fecha y hora en Java 8, como LocalDate, LocalTime, LocalDateTime, Period, Duration y ZonedDateTime, también se benefician de estas características funcionales.
+
+A continuación, se presentan ejemplos sencillos de cómo se utiliza la programación funcional en Java 8 con las clases de fecha y hora:
+
+1. LocalDate: Esta clase representa una fecha sin información sobre la hora del día.
+
+
+import java.time.LocalDate;
+
+public class Java8FunctionalProgramming {
+    public static void main(String[] args) {
+        LocalDate today = LocalDate.now();
+        System.out.println("Fecha actual: " + today);
+    }
+}
+
+
+En este ejemplo, utilizamos el método estático `now()` de la clase `LocalDate` para obtener la fecha actual.
+
+2. LocalTime: Esta clase representa una hora sin información sobre la fecha.
+
+
+import java.time.LocalTime;
+
+public class Java8FunctionalProgramming {
+    public static void main(String[] args) {
+        LocalTime currentTime = LocalTime.now();
+        System.out.println("Hora actual: " + currentTime);
+    }
+}
+
+
+Aquí utilizamos el método estático `now()` de la clase `LocalTime` para obtener la hora actual.
+
+3. LocalDateTime: Esta clase representa una fecha y hora sin información sobre la zona horaria.
+
+
+import java.time.LocalDateTime;
+
+public class Java8FunctionalProgramming {
+    public static void main(String[] args) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        System.out.println("Fecha y hora actual: " + currentDateTime);
+    }
+}
+
+
+En este caso, utilizamos el método estático `now()` de la clase `LocalDateTime` para obtener la fecha y hora actual.
+
+4. Period: Esta clase representa un período entre dos fechas.
+
+
+import java.time.LocalDate;
+import java.time.Period;
+
+public class Java8FunctionalProgramming {
+    public static void main(String[] args) {
+        LocalDate date1 = LocalDate.of(2023, 6, 1);
+        LocalDate date2 = LocalDate.of(2023, 6, 15);
+        Period period = Period.between(date1, date2);
+        System.out.println("Período entre " + date1 + " y " + date2 + ": " + period);
+    }
+}
+
+
+En este ejemplo, utilizamos el método estático `between()` de la clase `Period` para calcular el período entre dos fechas.
+
+5. Duration: Esta clase representa una duración entre dos puntos en el tiempo.
+
+
+import java.time.LocalTime;
+import java.time.Duration;
+
+public class Java8FunctionalProgramming {
+    public static void main(String[] args) {
+        LocalTime time1 = LocalTime.of(9, 0);
+        LocalTime time2 = LocalTime.of(10, 30);
+        Duration duration = Duration.between(time1, time2);
+        System.out.println("Duración entre " + time1 + " y " + time2 + ": " + duration);
+    }
+}
+
+
+Aquí utilizamos el método estático `between()` de la clase `Duration` para calcular la duración entre dos horas.
+
+6. ZonedDateTime: Esta clase representa una fecha y hora con información sobre la zona horaria.
+
+
+import java.time.ZonedDateTime;
+
+public class Java8FunctionalProgramming {
+    public static void main(String[] args) {
+        ZonedDateTime currentDateTime = ZonedDateTime.now();
+        System.out.println("Fecha
+
+ y hora actual con zona horaria: " + currentDateTime);
+    }
+}
+
+
+En este ejemplo, utilizamos el método estático `now()` de la clase `ZonedDateTime` para obtener la fecha y hora actual con información de la zona horaria.
+
+Estos ejemplos muestran cómo la programación funcional en Java 8 se puede aplicar a las diferentes clases de fecha y hora. Al utilizar funciones y expresiones lambda, podemos operar y manipular las fechas y horas de manera más eficiente y expresiva, lo que conduce a un código más limpio y modular.
+
+
+Anotaciones
+===========
+
+En Java 8, se introdujo una nueva funcionalidad llamada anotaciones o anotaciones de tipo de elementos repetibles (repeating annotations en inglés), que permiten aplicar una anotación a un elemento varias veces sin necesidad de envolverla en un contenedor. Anteriormente, para aplicar múltiples instancias de la misma anotación, se necesitaba un contenedor especial.
+
+Las anotaciones son metadatos que se pueden agregar a clases, métodos, campos u otros elementos del código fuente de Java. Proporcionan información adicional sobre esos elementos y se pueden utilizar por los compiladores, herramientas de análisis estático, marcos de trabajo y otras partes del entorno de desarrollo.
+
+El uso de anotaciones en Java 8 es sencillo y puede ayudar a mejorar la claridad del código y facilitar el desarrollo. A continuación, te daré un ejemplo sencillo para ilustrar su uso:
+
+Supongamos que estamos creando una aplicación para manejar empleados en una empresa y queremos definir anotaciones para los diferentes roles que pueden tener los empleados. Primero, definimos una anotación llamada "Rol" de la siguiente manera:
+
+
+import java.lang.annotation.*;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Rol {
+    String value();
+}
+
+
+En este ejemplo, la anotación "@Rol" tiene un atributo llamado "value" que puede ser utilizado para especificar el nombre del rol. La anotación se puede aplicar a elementos de tipo "TYPE" (clases, interfaces, enumeraciones).
+
+Las anotaciones `@Retention` y `@Target` proporcionan información sobre cómo se retiene la anotación en tiempo de ejecución y en qué elementos se puede aplicar la anotación.
+
+1. `@Retention`:
+La anotación `@Retention` se utiliza para especificar cómo se retiene la anotación en tiempo de ejecución. Tiene un atributo llamado `value` que puede tomar una de las siguientes constantes predefinidas de la enumeración `RetentionPolicy`:
+
+- `RetentionPolicy.SOURCE`: La anotación se retiene solo en el código fuente y no se incluye en el archivo compilado ni está disponible en tiempo de ejecución.
+- `RetentionPolicy.CLASS`: La anotación se retiene en el archivo compilado (bytecode) pero no está disponible en tiempo de ejecución. Esta es la opción predeterminada si no se especifica ninguna anotación `@Retention`.
+- `RetentionPolicy.RUNTIME`: La anotación se retiene en el archivo compilado y está disponible en tiempo de ejecución. Esto permite que las anotaciones se puedan acceder y utilizar mediante reflexión durante la ejecución del programa.
+
+Por ejemplo, en el caso de la anotación `@Rol` que mencionamos anteriormente, si se define como `@Retention(RetentionPolicy.RUNTIME)`, significa que la anotación estará disponible en tiempo de ejecución y podrá ser accedida mediante reflexión.
+
+2. `@Target`:
+La anotación `@Target` se utiliza para especificar en qué elementos se puede aplicar una anotación. Tiene un atributo llamado `value` que toma un array de constantes predefinidas de la enumeración `ElementType`. Algunos de los valores posibles son:
+
+- `ElementType.TYPE`: Se puede aplicar a clases, interfaces y enumeraciones.
+- `ElementType.FIELD`: Se puede aplicar a campos (variables de instancia).
+- `ElementType.METHOD`: Se puede aplicar a métodos.
+- `ElementType.PARAMETER`: Se puede aplicar a parámetros de métodos o constructores.
+- `ElementType.CONSTRUCTOR`: Se puede aplicar a constructores.
+- `ElementType.LOCAL_VARIABLE`: Se puede aplicar a variables locales dentro de un método o bloque.
+- `ElementType.ANNOTATION_TYPE`: Se puede aplicar a otras anotaciones.
+- `ElementType.PACKAGE`: Se puede aplicar a paquetes.
+
+Por ejemplo, si definimos la anotación `@Rol` como `@Target(ElementType.TYPE)`, significa que solo se puede aplicar a clases, interfaces y enumeraciones.
+
+La combinación de `@Retention` y `@Target` permite controlar cómo se retiene una anotación y en qué elementos se puede utilizar, proporcionando así una mayor precisión y control sobre el uso de las anotaciones en Java.
+
+A continuación, utilizamos la anotación para marcar algunas clases de ejemplo:
+
+
+@Rol("Administrador")
+public class EmpleadoAdmin {
+    // Código de la clase
+}
+
+@Rol("Desarrollador")
+public class EmpleadoDesarrollo {
+    // Código de la clase
+}
+
+@Rol("Gerente")
+public class EmpleadoGerente {
+    // Código de la clase
+}
+
+
+En este caso, hemos aplicado la anotación "@Rol" a tres clases diferentes, cada una con un valor diferente para el atributo "value".
+
+Ahora, podemos utilizar la reflexión en tiempo de ejecución para acceder a las anotaciones y obtener información adicional sobre los roles de los empleados. Aquí tienes un ejemplo:
+
+
+import java.lang.annotation.Annotation;
+
+public class Main {
+    public static void main(String[] args) {
+        Class<EmpleadoAdmin> empleadoClass = EmpleadoAdmin.class;
+        Rol rolAnnotation = empleadoClass.getAnnotation(Rol.class);
+        if (rolAnnotation != null) {
+            System.out.println("Rol del empleado: " + rolAnnotation.value());
+        }
+    }
+}
+
+
+En este caso, estamos obteniendo la clase "EmpleadoAdmin" y luego accedemos a su anotación "@Rol". Si la anotación existe, imprimimos el valor del atributo "value", que en este caso sería "Administrador".
+
+Este es solo un ejemplo básico del uso de anotaciones en Java 8. Las anotaciones pueden tener más atributos, pueden ser restringidas a diferentes tipos de elementos y se pueden utilizar para una amplia variedad de propósitos, como la configuración de inyección de dependencias, la serialización o la generación de código. Su uso puede variar dependiendo de los requisitos específicos de cada proyecto.
+
+
+Manejo de archivos
+==================
+
+El manejo de archivos en Java 8 se refiere a las operaciones que puedes realizar en archivos y directorios utilizando las clases y métodos proporcionados por el paquete `java.io`. Esta API te permite crear, leer, escribir, copiar, eliminar y administrar archivos y directorios en tu sistema de archivos.
+
+Aquí te proporcionaré una descripción amplia de las operaciones básicas de manejo de archivos en Java 8, junto con ejemplos sencillos para ilustrar su uso.
+
+1. Creación de un archivo:
+   Puedes crear un nuevo archivo utilizando la clase `File` y el método `createNewFile()`.
+
+
+   import java.io.File;
+   import java.io.IOException;
+
+   public class CrearArchivo {
+       public static void main(String[] args) {
+           try {
+               File archivo = new File("miArchivo.txt");
+               boolean creado = archivo.createNewFile();
+               if (creado) {
+                   System.out.println("Archivo creado con éxito.");
+               } else {
+                   System.out.println("El archivo ya existe.");
+               }
+           } catch (IOException e) {
+               System.out.println("Ocurrió un error al crear el archivo.");
+               e.printStackTrace();
+           }
+       }
+   }
+
+
+2. Lectura de un archivo:
+   Puedes leer el contenido de un archivo utilizando la clase `FileReader` y la clase `BufferedReader`.
+
+
+   import java.io.BufferedReader;
+   import java.io.FileReader;
+   import java.io.IOException;
+
+   public class LeerArchivo {
+       public static void main(String[] args) {
+           try (BufferedReader br = new BufferedReader(new FileReader("miArchivo.txt"))) {
+               String linea;
+               while ((linea = br.readLine()) != null) {
+                   System.out.println(linea);
+               }
+           } catch (IOException e) {
+               System.out.println("Ocurrió un error al leer el archivo.");
+               e.printStackTrace();
+           }
+       }
+   }
+
+
+3. Escritura en un archivo:
+   Puedes escribir en un archivo utilizando la clase `FileWriter` y la clase `BufferedWriter`.
+
+
+   import java.io.BufferedWriter;
+   import java.io.FileWriter;
+   import java.io.IOException;
+
+   public class EscribirArchivo {
+       public static void main(String[] args) {
+           try (BufferedWriter bw = new BufferedWriter(new FileWriter("miArchivo.txt"))) {
+               bw.write("Hola, mundo!");
+               bw.newLine();
+               bw.write("Este es un ejemplo de escritura en archivo.");
+               System.out.println("Se escribió en el archivo correctamente.");
+           } catch (IOException e) {
+               System.out.println("Ocurrió un error al escribir en el archivo.");
+               e.printStackTrace();
+           }
+       }
+   }
+
+
+4. Copia de archivos:
+   Puedes copiar un archivo de origen a un archivo de destino utilizando la clase `Files` y el método `copy()`.
+
+
+   import java.io.IOException;
+   import java.nio.file.Files;
+   import java.nio.file.Path;
+   import java.nio.file.StandardCopyOption;
+
+   public class CopiarArchivo {
+       public static void main(String[] args) {
+           try {
+               Path origen = Path.of("archivoOriginal.txt");
+               Path destino = Path.of("archivoCopia.txt");
+               Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
+               System.out.println("El archivo se copió correctamente.");
+           } catch (IOException e) {
+               System.out.println("Ocurrió un error al copiar el archivo.");
+               e.printStackTrace();
+           }
+       }
+   }
+
+
+5. Eliminación de un
+
+ archivo:
+   Puedes eliminar un archivo utilizando el método `delete()` de la clase `File`.
+
+
+   import java.io.File;
+
+   public class EliminarArchivo {
+       public static void main(String[] args) {
+           File archivo = new File("miArchivo.txt");
+           boolean eliminado = archivo.delete();
+           if (eliminado) {
+               System.out.println("El archivo se eliminó correctamente.");
+           } else {
+               System.out.println("No se pudo eliminar el archivo.");
+           }
+       }
+   }
+
+
+Estos son solo algunos ejemplos básicos de las operaciones de manejo de archivos en Java 8. La API `java.io` proporciona muchas más clases y métodos para realizar operaciones avanzadas como mover archivos, listar directorios, leer/escribir archivos binarios, entre otras. Te recomendaría consultar la documentación oficial de Java para obtener más información sobre estas funcionalidades.
+
+
+
+
+
+
+
+
+
+
+
+

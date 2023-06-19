@@ -1,0 +1,134 @@
+Java - Hilos y concurrencia
+***************************
+
+Java SE ofrece tres formas de manejar programación concurrente sobre la base del concepto del hilo:
+
+* Clase Thread: herencia de esta clase para trabajar y sobreescribir sus métodos.
+* Interfaz Runnable: forma más recomendada, se trabaja con clases que deben implementar el método run.
+* Executor Framework: manejo de multihilos.
+
+
+Thread
+======
+
+Es la clase base de los hilos. Por defecto, una aplicación Java usa el hilo principal basado en esta clase.
+Para trabajar concurrentemente se puede crear hilos heredados de Thread como este:
+
+package com.mito.concurrencia;
+
+public class THilo extends Thread {
+
+	private int id;
+	
+	public THilo(int id){
+		this.id = id;
+	}
+	
+	// método principal que debe implementarse
+	@Override
+	public void run(){
+		for(int i = 0;i<100;i++){
+			System.out.println("[T]Ejecuntándose hilo de id -->" + id);
+		}
+	}
+	
+}
+
+
+Runnable
+========
+
+Es la interfaz que tiene como método a implementar "run", esto es, una clase puede implementarla. Es la forma más recomendada para que la clase en cuestión pueda interactuar con otras interfaces en aras del polimorfismo.
+
+package com.mito.concurrencia;
+
+// clase que implementa la interfaz Runnable
+public class RHilo implements Runnable {
+
+    private int id;
+
+    public RHilo(int id){
+        this.id = id;
+    }
+
+    // debe implementarse este método
+    @Override
+    public void run() {
+        for(int i = 0;i<100;i++){
+            System.out.println("[R]Ejecuntándose hilo de id -->" + id);
+        }
+
+    }
+
+}
+
+Definidos estos casos, es posible trabajar con instancias de estos hilos de varias formas:
+
+import com.mito.concurrencia.*;
+
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+
+        // instancia de THilo (Thread)
+        THilo hilo1 = new THilo(1);
+        hilo1.start();
+
+        // una instancia de Thread emplea una instancia anónima de RHilo
+        Thread hilo2 = new Thread(new RHilo(2));
+        hilo2.start();
+
+        // una instancia de Thread emplea una instancia de Runnable
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("[A]Hilo ejecuntandose");
+            }
+        };
+        Thread hilo3 = new Thread(r);
+        //hilo3.start();
+        if(!hilo3.isAlive()){ // solo se ejecuta hilo3 si no está activo
+            System.out.println("Iniciando hilo 3");
+            hilo3.start();
+        }
+
+        System.out.println("Ejecutándose hilo MAIN");
+    }
+}
+
+Método sleep
+------------
+
+// método estático sleep: pausa por un lapso definido en milisegundos
+THilo.sleep(3000); // 3 segundos
+
+Es un método estático, pues puede usarse con la clase Thread o una clase hija de Thread. Sirve para hacer una pausa en la ejecución concurrente del app.
+
+
+Método join
+-----------
+
+Controla la concurrencia evitando la ejecución de un hilo siguiente al hilo actual:
+
+hilo2.start();
+hilo2.join(); // hilo3 no se ejecutará hasta que acabe hilo2
+hilo3.start();
+
+
+Executor
+========
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
