@@ -1,0 +1,707 @@
+Java - Bases de Datos y Java
+****************************
+
+NOTA: para practicar este tema en los proyectos, el build system debe cambiarse de IntelliJ a Maven.
+En configuraciones avanzadas, definir group ID como el paquete principal. Por ejemplo: org.jdbc.ejemplo
+
+Configuración de un proyecto con JDBC
+=====================================
+
+Se requiere configurar para una base de datos en particular. En este caso, se aplicará para MySQL.
+
+Editar pom.xml (debajo de properties):
+
+    <dependencies>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.30</version>
+        </dependency>
+    </dependencies>
+
+La versión es la más reciente.
+
+Luego, cargar las dependencias anotadas con el botón en la parte superior derecha del archivo POM.
+
+Desarrollo básico de una conexión a BBDD con JDBC
+=================================================
+
+package org.jdbc.ejemplo;
+
+import java.sql.*;
+
+//
+public class Main {
+    public static void main(String[] args) {
+        //
+        String motorBD = "jdbc:mysql";
+        String hostBD = "localhost:3306";
+        String schemaBD = "java_curso";
+        String serverTimezoneBD = "serverTimezone=America/Guayaquil";
+        String url = motorBD + "://" + hostBD + "/" + schemaBD + "?" + serverTimezoneBD;
+        String username = "root";
+        String password = "";
+        // manejo de try-catch alternativo para declarar elementos de inicio y cierre automáticamente
+        try (
+                Connection conn = DriverManager.getConnection(url, username, password);
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCTOS") // el ";" final no es necesario
+        ) {
+            // recorre cada registro
+            while (rs.next()) {
+                System.out.println("registro -> id: " + rs.getInt("id") + ", nombre: " + rs.getString("nombre") + ", precio: " + rs.getInt("precio") + ", fecha: " + rs.getDate("fecha_registro"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error: " + e.getMessage() + ", SQLCODE" + e.getSQLState() + " - Error: " + e.getErrorCode());
+        }
+    }
+}
+
+Bloque de conexión y obtención de registros
+-------------------------------------------
+
+Connection conn = DriverManager.getConnection(url, username, password); // conexión con datos de sesión
+Statement stmt = conn.createStatement(); // interfaz para crear objeto que ejecuta las sentencias SQL
+ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCTOS"); // objeto de retorno de registros después de consultar en la BBDD
+
+
+Patrón Singleton para JDBC
+--------------------------
+
+Debe garantizarse una sola instancia por clase. Concretamente, debería haber una única instancia de conexión a la base de datos que sea aprovechable en varios puntos de la aplicación.
+
+// Conexión a BBDD
+
+package org.jdbc.ejemplo.util;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class ConexionBaseDatos {
+    private static String url;
+    private static String username;
+    private static String password;
+    private static Connection conn;
+
+    private ConexionBaseDatos() {
+    }
+
+    public static Connection getInstance() throws SQLException {
+        String motorBD = "jdbc:mysql";
+        String hostBD = "localhost:3306";
+        String schemaBD = "java_curso";
+        String serverTimezoneBD = "serverTimezone=America/Guayaquil";
+        url = motorBD + "://" + hostBD + "/" + schemaBD + "?" + serverTimezoneBD;
+        username = "root";
+        password = "";
+        if (conn == null){
+            conn = DriverManager.getConnection(url, username, password);
+        }
+        return conn;
+    }
+}
+
+
+// Uso en Main
+
+package org.jdbc.ejemplo;
+
+import org.jdbc.ejemplo.util.ConexionBaseDatos;
+
+import java.sql.*;
+
+//
+public class Main {
+    public static void main(String[] args) {
+        //
+        try (
+                Connection conn = ConexionBaseDatos.getInstance();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCTOS") // el ";" final no es necesario
+        ) {
+            // recorre cada registro
+            while (rs.next()) {
+                System.out.println("registro -> id: " + rs.getInt("id") + ", nombre: " + rs.getString("nombre") + ", precio: " + rs.getInt("precio") + ", fecha: " + rs.getDate("fecha_registro"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error: " + e.getMessage() + ", SQLCODE" + e.getSQLState() + " - Error: " + e.getErrorCode());
+        }
+    }
+}
+
+
+Implementación de Repositorio
+=============================
+
+En adición a la clase de conexión a BBDD:
+
+* Modelos: clases que permitirán mapear tablas de BBDD.
+* Repositorio: interfaz de métodos empleados por cada modelo. Sus implementaciones están asociadas a los modelos.
+
+Por ejemplo:
+
+// Repositorio común
+package org.aguzman.java.jdbc.repositorio;
+
+import java.util.List;
+
+public interface Repositorio<T> {
+    List<T> listar();
+
+    T porId(Long id);
+
+    void guardar(T t);
+
+    void eliminar(Long id);
+}
+
+// Modelos de producto y categoría
+package org.aguzman.java.jdbc.modelo;
+
+import java.util.Date;
+
+public class Producto {
+    private Long id;
+    private String nombre;
+    private Integer precio;
+    private Date fechaRegistro;
+    private Categoria categoria;
+
+    public Producto() {
+    }
+
+    public Producto(Long id, String nombre, Integer precio, Date fechaRegistro) {
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public Integer getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(Integer precio) {
+        this.precio = precio;
+    }
+
+    public Date getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(Date fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    @Override
+    public String toString() {
+        return  id +
+                " | " +
+                nombre +
+                " | " +
+                precio +
+                " | " +
+                fechaRegistro +
+                " | " + categoria.getNombre();
+    }
+}
+
+package org.aguzman.java.jdbc.modelo;
+
+public class Categoria {
+    private Long id;
+    private String nombre;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+}
+
+
+// Implementación del Repositorio para Producto
+
+package org.aguzman.java.jdbc.repositorio;
+
+import org.aguzman.java.jdbc.modelo.Categoria;
+import org.aguzman.java.jdbc.modelo.Producto;
+import org.aguzman.java.jdbc.util.ConexionBaseDatos;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProductoRepositorioImpl implements Repositorio<Producto>{
+
+    private Connection getConnection() throws SQLException {
+        return ConexionBaseDatos.getInstance();
+    }
+
+    @Override
+    public List<Producto> listar() {
+        List<Producto> productos = new ArrayList<>();
+
+        try (Statement stmt = getConnection().createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT p.*, c.nombre as categoria FROM productos as p " +
+                     "inner join categorias as c ON (p.categoria_id = c.id)")) {
+            while (rs.next()) {
+                Producto p = crearProducto(rs);
+                productos.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productos;
+    }
+
+
+    @Override
+    public Producto porId(Long id) {
+        Producto producto = null;
+
+        try (PreparedStatement stmt = getConnection().
+                prepareStatement("SELECT p.*, c.nombre as categoria FROM productos as p " +
+                        "inner join categorias as c ON (p.categoria_id = c.id) WHERE p.id = ?")) {
+            stmt.setLong(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    producto = crearProducto(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return producto;
+    }
+
+    @Override
+    public void guardar(Producto producto) {
+        String sql;
+        if (producto.getId() != null && producto.getId()>0) {
+            sql = "UPDATE productos SET nombre=?, precio=?, categoria_id=? WHERE id=?";
+        } else {
+            sql = "INSERT INTO productos(nombre, precio, categoria_id, fecha_registro) VALUES(?,?,?,?)";
+        }
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setString(1, producto.getNombre());
+            stmt.setLong(2, producto.getPrecio());
+            stmt.setLong(3, producto.getCategoria().getId());
+
+            if (producto.getId() != null && producto.getId() > 0) {
+                stmt.setLong(4, producto.getId());
+            } else {
+                stmt.setDate(4, new Date(producto.getFechaRegistro().getTime()));
+            }
+
+            stmt.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void eliminar(Long id) {
+        try (PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM productos WHERE id=?")) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    private Producto crearProducto(ResultSet rs) throws SQLException {
+        Producto p = new Producto();
+        p.setId(rs.getLong("id"));
+        p.setNombre(rs.getString("nombre"));
+        p.setPrecio(rs.getInt("precio"));
+        p.setFechaRegistro(rs.getDate("fecha_registro"));
+        Categoria categoria = new Categoria(); // DTO
+        categoria.setId(rs.getLong("categoria_id"));
+        categoria.setNombre(rs.getString("categoria"));
+        p.setCategoria(categoria);
+        return p;
+    }
+}
+
+
+Pool de conexiones
+==================
+
+Permite un manejo concurrente de ejecuciones de la aplicación, cada una hace una sesión a la base de datos.
+
+Configuración
+-------------
+
+En pom.xml:
+
+Agregar la siguiente dependencia:
+
+<dependency>
+	<groupId>org.apache.commons</groupId>
+	<artifactId>commons-dbcp2</artifactId>
+	<version>2.8.0</version>
+</dependency>
+
+
+Luego, cargar las dependencias anotadas con el botón en la parte superior derecha del archivo POM
+
+En la clase donde está la conexión a la base de datos:
+
+package org.aguzman.java.jdbc.util;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class ConexionBaseDatos {
+    private static String url = "jdbc:mysql://localhost:3306/java_curso?serverTimezone=America/Santiago";
+    private static String username = "root";
+    private static String password = "sasa";
+    private static BasicDataSource pool; // ---------> agregar
+
+    // crear este método estático
+    public static BasicDataSource getInstance() throws SQLException {
+        if (pool == null) {
+            pool = new BasicDataSource();
+            pool.setUrl(url);
+            pool.setUsername(username);
+            pool.setPassword(password);
+            pool.setInitialSize(3);
+            pool.setMinIdle(3);
+            pool.setMaxIdle(8);
+            pool.setMaxTotal(8);
+        }
+        return pool;
+    }
+
+    public static Connection getConnection() throws SQLException {
+        return getInstance().getConnection();
+    }
+}
+
+
+Transacciones
+=============
+
+En Java 8 y versiones posteriores, puedes utilizar JDBC (Java Database Connectivity) para interactuar con una base de datos y realizar operaciones como inserción, actualización y eliminación de datos. Las transacciones en JDBC te permiten agrupar estas operaciones en una unidad lógica de trabajo que debe ser ejecutada en su totalidad o no realizarse en absoluto. Esto garantiza la integridad y consistencia de los datos en la base de datos.
+
+El manejo de transacciones en JDBC implica los siguientes pasos:
+
+1. Establecer una conexión a la base de datos: Primero, necesitas establecer una conexión a la base de datos utilizando la clase `java.sql.Connection`. Puedes usar un objeto `DriverManager` para obtener una instancia de `Connection` proporcionando los detalles de conexión, como la URL de la base de datos, el nombre de usuario y la contraseña.
+
+2. Deshabilitar el modo de autocommit: Por defecto, JDBC ejecuta cada sentencia SQL en una transacción autónoma y realiza un commit automático después de cada sentencia. Sin embargo, para trabajar con transacciones explícitas, necesitas deshabilitar el modo de autocommit llamando al método `setAutoCommit(false)` en el objeto `Connection`. Esto asegura que todas las operaciones realizadas dentro de la transacción se agrupen.
+
+3. Ejecutar las operaciones dentro de la transacción: A continuación, ejecutas las operaciones de base de datos dentro de la transacción. Esto puede incluir inserciones, actualizaciones o eliminaciones de datos utilizando objetos `PreparedStatement` o `Statement`.
+
+Por ejemplo, supongamos que deseas transferir una cantidad de dinero entre dos cuentas en una tabla `Cuentas` de una base de datos. La operación podría implicar la actualización del saldo de la cuenta de origen y la cuenta de destino en una única transacción.
+
+
+try {
+   // Paso 2: Deshabilitar el modo de autocommit
+   connection.setAutoCommit(false);
+
+   // Paso 3: Ejecutar operaciones dentro de la transacción
+   // Actualizar el saldo de la cuenta de origen
+   PreparedStatement updateStatement = connection.prepareStatement(
+	   "UPDATE Cuentas SET saldo = saldo - ? WHERE numero = ?");
+   updateStatement.setDouble(1, cantidad);
+   updateStatement.setString(2, cuentaOrigen);
+   updateStatement.executeUpdate();
+
+   // Actualizar el saldo de la cuenta de destino
+   PreparedStatement insertStatement = connection.prepareStatement(
+	   "UPDATE Cuentas SET saldo = saldo + ? WHERE numero = ?");
+   insertStatement.setDouble(1, cantidad);
+   insertStatement.setString(2, cuentaDestino);
+   insertStatement.executeUpdate();
+
+   // Si todas las operaciones se ejecutan correctamente, confirmar la transacción
+   connection.commit();
+} catch (SQLException e) {
+   // Si ocurre algún error, deshacer la transacción
+   connection.rollback();
+   e.printStackTrace();
+} finally {
+   // Restaurar el modo de autocommit a su estado original
+   connection.setAutoCommit(true);
+}
+
+
+En el ejemplo anterior, las actualizaciones se realizan dentro de una transacción. Si se produce algún error durante la ejecución de las operaciones, se llama al método `rollback()` para deshacer la transacción y restaurar el estado original de los datos.
+
+4. Confirmar o deshacer la transacción: Después de ejecutar todas las operaciones, debes tomar una decisión sobre si confirmar o deshacer la transacción.
+
+ Si todas las operaciones se ejecutan correctamente, puedes llamar al método `commit()` en el objeto `Connection` para confirmar la transacción y realizar los cambios permanentemente en la base de datos. Si ocurre algún error, puedes llamar al método `rollback()` para deshacer la transacción y descartar los cambios realizados.
+
+5. Restaurar el modo de autocommit: Finalmente, asegúrate de restaurar el modo de autocommit a su estado original llamando al método `setAutoCommit(true)` en el objeto `Connection`. Esto asegura que las operaciones posteriores se ejecuten de manera autónoma y se confirmen automáticamente.
+
+Es importante tener en cuenta que JDBC también admite transacciones anidadas, puntos de guardado (savepoints) y otras características más avanzadas que no se han cubierto en este ejemplo básico. Sin embargo, los pasos mencionados anteriormente son los fundamentos para trabajar con transacciones en JDBC.
+
+
+Servicio
+========
+
+Si se desea trabajar con modelos afines, se recomienda crear un servicio:
+
+package org.aguzman.java.jdbc.servicio;
+
+import org.aguzman.java.jdbc.modelo.Categoria;
+import org.aguzman.java.jdbc.modelo.Producto;
+
+import java.sql.SQLException;
+import java.util.List;
+
+public interface Servicio {
+    List<Producto> listar() throws SQLException;
+
+    Producto porId(Long id) throws SQLException;
+
+    Producto guardar(Producto producto) throws SQLException;
+
+    void eliminar(Long id) throws SQLException;
+
+    List<Categoria> listarCategoria() throws SQLException;
+
+    Categoria porIdCategoria(Long id) throws SQLException;
+
+    Categoria guardarCategoria(Categoria categoria) throws SQLException;
+
+    void eliminarCategoria(Long id) throws SQLException;
+
+    void guardarProductoConCategoria(Producto producto, Categoria categoria) throws SQLException;
+}
+
+package org.aguzman.java.jdbc.servicio;
+
+import org.aguzman.java.jdbc.modelo.Categoria;
+import org.aguzman.java.jdbc.modelo.Producto;
+import org.aguzman.java.jdbc.repositorio.CategoriaRepositorioImpl;
+import org.aguzman.java.jdbc.repositorio.ProductoRepositorioImpl;
+import org.aguzman.java.jdbc.repositorio.Repositorio;
+import org.aguzman.java.jdbc.util.ConexionBaseDatos;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
+public class CatalogoServicio implements Servicio{
+    private Repositorio<Producto> productoRepositorio;
+    private Repositorio<Categoria> categoriaRepositorio;
+
+    public CatalogoServicio() {
+        this.productoRepositorio = new ProductoRepositorioImpl();
+        this.categoriaRepositorio = new CategoriaRepositorioImpl();
+    }
+
+    @Override
+    public List<Producto> listar() throws SQLException {
+        try (Connection conn = ConexionBaseDatos.getConnection()) {
+            productoRepositorio.setConn(conn);
+            return productoRepositorio.listar();
+        }
+
+    }
+
+    @Override
+    public Producto porId(Long id) throws SQLException {
+        try (Connection conn = ConexionBaseDatos.getConnection()) {
+            productoRepositorio.setConn(conn);
+            return productoRepositorio.porId(id);
+        }
+
+    }
+
+    @Override
+    public Producto guardar(Producto producto) throws SQLException {
+        try (Connection conn = ConexionBaseDatos.getConnection()) {
+            productoRepositorio.setConn(conn);
+            if (conn.getAutoCommit()) {
+                conn.setAutoCommit(false);
+            }
+            Producto nuevoProducto = null;
+            try {
+                nuevoProducto = productoRepositorio.guardar(producto);
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+            }
+            return nuevoProducto;
+        }
+    }
+
+    @Override
+    public void eliminar(Long id) throws SQLException {
+        try (Connection conn = ConexionBaseDatos.getConnection()) {
+            productoRepositorio.setConn(conn);
+            if (conn.getAutoCommit()) {
+                conn.setAutoCommit(false);
+            }
+            try {
+                productoRepositorio.eliminar(id);
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public List<Categoria> listarCategoria() throws SQLException {
+        try (Connection conn = ConexionBaseDatos.getConnection()) {
+            categoriaRepositorio.setConn(conn);
+            return categoriaRepositorio.listar();
+        }
+    }
+
+    @Override
+    public Categoria porIdCategoria(Long id) throws SQLException {
+        try (Connection conn = ConexionBaseDatos.getConnection()) {
+            categoriaRepositorio.setConn(conn);
+            return categoriaRepositorio.porId(id);
+        }
+
+    }
+
+    @Override
+    public Categoria guardarCategoria(Categoria categoria) throws SQLException {
+        try (Connection conn = ConexionBaseDatos.getConnection()) {
+            categoriaRepositorio.setConn(conn);
+
+            if (conn.getAutoCommit()) {
+                conn.setAutoCommit(false);
+            }
+            Categoria nuevaCategoria = null;
+            try {
+                nuevaCategoria = categoriaRepositorio.guardar(categoria);
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+            }
+            return nuevaCategoria;
+        }
+    }
+
+    @Override
+    public void eliminarCategoria(Long id) throws SQLException {
+        try (Connection conn = ConexionBaseDatos.getConnection()) {
+            categoriaRepositorio.setConn(conn);
+
+            if (conn.getAutoCommit()) {
+                conn.setAutoCommit(false);
+            }
+            try {
+                categoriaRepositorio.eliminar(id);
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    @Override
+    public void guardarProductoConCategoria(Producto producto, Categoria categoria) throws SQLException {
+        try (Connection conn = ConexionBaseDatos.getConnection()) {
+            productoRepositorio.setConn(conn);
+            categoriaRepositorio.setConn(conn);
+
+            if (conn.getAutoCommit()) {
+                conn.setAutoCommit(false);
+            }
+            try {
+                Categoria nuevaCategoria = categoriaRepositorio.guardar(categoria);
+                producto.setCategoria(nuevaCategoria);
+                productoRepositorio.guardar(producto);
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+            }
+        }
+
+    }
+}
+
+El servicio maneja varios repositorios a la vez y, de esta forma, puede hacer código más reutilizable.
+
+package org.aguzman.java.jdbc;
+
+import org.aguzman.java.jdbc.modelo.Categoria;
+import org.aguzman.java.jdbc.modelo.Producto;
+import org.aguzman.java.jdbc.repositorio.CategoriaRepositorioImpl;
+import org.aguzman.java.jdbc.repositorio.ProductoRepositorioImpl;
+import org.aguzman.java.jdbc.repositorio.Repositorio;
+import org.aguzman.java.jdbc.servicio.CatalogoServicio;
+import org.aguzman.java.jdbc.servicio.Servicio;
+import org.aguzman.java.jdbc.util.ConexionBaseDatos;
+
+import java.sql.*;
+import java.util.Date;
+
+public class EjemploJdbc {
+    public static void main(String[] args) throws SQLException {
+
+        Servicio servicio = new CatalogoServicio();
+        System.out.println("============= listar =============");
+        servicio.listar().forEach(System.out::println);
+        Categoria categoria = new Categoria();
+        categoria.setNombre("Iluminación");
+
+        Producto producto = new Producto();
+        producto.setNombre("Lámpara led escritorio");
+        producto.setPrecio(990);
+        producto.setFechaRegistro(new Date());
+        producto.setSku("abcdefgh12");
+        servicio.guardarProductoConCategoria(producto, categoria);
+        System.out.println("Producto guardado con éxito: " + producto.getId());
+        servicio.listar().forEach(System.out::println);
+
+    }
+}
+
+
+
+
