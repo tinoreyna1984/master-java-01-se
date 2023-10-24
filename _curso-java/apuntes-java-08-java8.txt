@@ -552,9 +552,7 @@ Aquí te proporcionaré una descripción amplia de las operaciones básicas de m
    }
 
 
-5. Eliminación de un
-
- archivo:
+5. Eliminación de un archivo:
    Puedes eliminar un archivo utilizando el método `delete()` de la clase `File`.
 
 
