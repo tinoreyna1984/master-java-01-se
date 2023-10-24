@@ -1,6 +1,61 @@
 Java - Java 8
 *************
 
+Clase StringBuilder
+===================
+
+StringBuilder es una clase en Java que se utiliza para crear y manipular cadenas de caracteres de manera eficiente. A partir de Java 5, se introdujo la clase `StringBuilder` como una alternativa a `String` cuando se requiera realizar operaciones de concatenación o modificación en una cadena de caracteres de manera eficiente. La principal diferencia entre `String` y `StringBuilder` radica en la mutabilidad: los objetos `String` son inmutables, lo que significa que una vez que se crea una cadena, no se puede modificar, mientras que los objetos `StringBuilder` son mutables y pueden cambiar sin crear nuevos objetos.
+
+Aquí se muestra una visión general de los conceptos clave y los métodos más importantes de la clase `StringBuilder` en Java 8+:
+
+1. Creación de un objeto StringBuilder:
+   
+   Para crear un objeto `StringBuilder`, puedes usar uno de los siguientes métodos:
+
+   StringBuilder sb = new StringBuilder(); // Crea un StringBuilder vacío.
+   StringBuilder sb = new StringBuilder("Hola"); // Inicializa un StringBuilder con un valor inicial.
+
+2. Métodos importantes:
+
+   - `append(String str)`: Agrega una cadena al final del `StringBuilder`.
+
+   - `append(int num)`, `append(double num)`, etc.: Agrega un valor numérico al final del `StringBuilder`.
+
+   - `insert(int offset, String str)`: Inserta una cadena en la posición especificada.
+
+   - `delete(int start, int end)`: Elimina caracteres desde la posición `start` hasta `end - 1`.
+
+   - `deleteCharAt(int index)`: Elimina el carácter en la posición especificada.
+
+   - `replace(int start, int end, String str)`: Reemplaza el contenido en el rango especificado por la nueva cadena.
+
+   - `reverse()`: Invierte el contenido del `StringBuilder`.
+
+   - `length()`: Devuelve la longitud actual de la cadena.
+
+   - `capacity()`: Devuelve la capacidad actual del `StringBuilder`.
+
+   - `toString()`: Convierte el `StringBuilder` en un objeto `String`.
+
+   - `trimToSize()`: Ajusta la capacidad del `StringBuilder` al tamaño actual de la cadena.
+
+   - `setLength(int newLength)`: Establece la longitud del `StringBuilder`. Útil si deseas acortar o extender la cadena.
+
+3. Eficiencia:
+
+   Una de las principales ventajas de usar `StringBuilder` es su eficiencia en comparación con la concatenación de cadenas usando el operador `+`. En bucles o situaciones en las que se realizan muchas operaciones de concatenación, el rendimiento de `StringBuilder` es notablemente mejor.
+
+4. Inmutabilidad:
+
+   A diferencia de `String`, un `StringBuilder` es mutable, lo que significa que puedes modificar su contenido sin crear un nuevo objeto. Esto puede ahorrar memoria y mejorar el rendimiento cuando necesitas realizar muchas modificaciones en una cadena.
+
+5. Hilo no seguro:
+
+   `StringBuilder` no es seguro para hilos, lo que significa que no se debe acceder a un objeto `StringBuilder` desde múltiples hilos sin una sincronización adecuada.
+
+En resumen, `StringBuilder` es una clase útil para la manipulación eficiente de cadenas de caracteres mutables en Java. Su capacidad para realizar operaciones de concatenación y modificación de cadenas de manera eficiente lo convierte en una elección preferida en comparación con la concatenación de cadenas regulares cuando se trabaja con texto dinámico en tus aplicaciones Java.
+
+
 Operadores Lambda - Funciones de flecha
 =======================================
 
